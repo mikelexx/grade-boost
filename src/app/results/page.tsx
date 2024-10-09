@@ -20,59 +20,75 @@ const mockResults = [
     time: "3 days ago",
     thumbnailUrl: "/images/fakeThumbnail.jpeg",
     authorImg: "/images/small.jpeg",
+
   },
-  // Add more results as needed
+  {
+    id: 3,
+    title: "Physics Assignment",
+    materialType: "assignments",
+    downloads: "2k",
+    time: "3 days ago",
+    thumbnailUrl: "/images/fakeThumbnail.jpeg",
+    authorImg: "/images/small.jpeg",
+  },
+  {
+    id: 4,
+    title: "Physics Assignment",
+    materialType: "assignments",
+    downloads: "2k",
+    time: "3 days ago",
+    thumbnailUrl: "/images/fakeThumbnail.jpeg",
+    authorImg: "/images/small.jpeg",
+  },
+  {
+    id: 5,
+    title: "Physics Assignment",
+    materialType: "assignments",
+    downloads: "2k",
+    time: "3 days ago",
+    thumbnailUrl: "/images/fakeThumbnail.jpeg",
+    authorImg: "/images/small.jpeg",
+  },
+
 ];
 
-export default function Results() {
+
+export default function ResultsObsolete() {
   return (
     <>
       <ResultsPageNavBar />
-      <div className="flex gap-6 p-6">
+      <div className='flex-col pt-16 bg-white p-6'>
+      <h1 className='break-words text-center text-center text-2xl md:text-3xl font-semibold mb-6'>Results for 'Ecu 404 maths pastpapers' </h1>
+     <div className="flex gap-6 bg-white">
         {/* Left Sidebar */}
-        <aside className="w-1/4 bg-gray-100 p-6 rounded-lg shadow">
-          <h3 className="text-xl font-semibold mb-4">Material Types</h3>
-          <div>
-            <label className="flex justify-between items-center py-2">
-              <span>Past Papers (5)</span>
-              <input
-                type="checkbox"
-                className="form-checkbox text-blue-600"
-                value="pastpapers"
-              />
-            </label>
-            <hr className="border-gray-300" />
-            <label className="flex justify-between items-center py-2">
-              <span>Assignments (3)</span>
-              <input
-                type="checkbox"
-                className="form-checkbox text-blue-600"
-                value="assignments"
-              />
-            </label>
-            <hr className="border-gray-300" />
-            <label className="flex justify-between items-center py-2">
-              <span>Notes (8)</span>
-              <input
-                type="checkbox"
-                className="form-checkbox text-blue-600"
-                value="notes"
-              />
-            </label>
-            <hr className="border-gray-300" />
-            <label className="flex justify-between items-center py-2">
-              <span>Solutions (6)</span>
-              <input
-                type="checkbox"
-                className="form-checkbox text-blue-600"
-                value="solutions"
-              />
-            </label>
-          </div>
-        </aside>
+	<aside className="sticky top-20 w-1/4  p-6 mb-auto border border-black border-opacity-20">
+
+	  <h3 className="text-xl font-semibold mb-4">Material Types</h3>
+	  <div>
+	    <label className="flex justify-between items-center py-2">
+	      <span>Past Papers (5)</span>
+	      <input type="checkbox" className="self-centerform-checkbox text-blue-600" value="pastpapers" />
+	    </label>
+	    <hr className="border-gray-300" />
+	    <label className="flex justify-between items-center py-2">
+	      <span>Assignments (3)</span>
+	      <input type="checkbox" className="form-checkbox text-blue-600" value="assignments" />
+	    </label>
+	    <hr className="border-gray-300" />
+	    <label className="flex justify-between items-center py-2">
+	      <span>Notes (8)</span>
+	      <input type="checkbox" className="form-checkbox text-blue-600" value="notes" />
+	    </label>
+	    <hr className="border-gray-300" />
+	    <label className="flex justify-between items-center py-2">
+	      <span>Solutions (6)</span>
+	      <input type="checkbox" className="form-checkbox text-blue-600" value="solutions" />
+	    </label>
+	  </div>
+	</aside>
 
         {/* Right Results Section */}
-        <section className="w-3/4">
+        <section className="w-3/4 h-full overflow-y-auto">
           {mockResults.map((result) => (
             <div key={result.id}
                  className="bg-white p-6 rounded-lg shadow mb-6 flex flex-col md:flex-row">
@@ -128,7 +144,7 @@ export default function Results() {
           ))}
         </section>
       </div>
+      </div>
     </>
   );
 }
-
