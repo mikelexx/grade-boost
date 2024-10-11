@@ -15,8 +15,8 @@ export default function NavBar(){
       <Link className="hover:underline" href="#signup">
    	</Link>
         <div className="relative">
-          <select className="mt-1 rounded-md border-gray-300 bg-white text-black ">
-            <option value="English" selected>
+          <select value='English' className="mt-1 rounded-md border-gray-300 bg-white text-black ">
+            <option value="English">
               English
             </option>
             <option value="Swahili">Swahili</option>
