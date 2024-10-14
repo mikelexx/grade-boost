@@ -4,11 +4,8 @@ import React, { useState } from 'react';
 import Popup from 'reactjs-popup';
 import { FaDownload } from "react-icons/fa"; // Icons from react-icons
 import { IoClose } from 'react-icons/io5';
-
-interface CurrentUser {
-  downloadsCount: number,
-  uploadsCount: number
-}
+import Link from 'next/link';
+import { CurrentUser } from '@/types/CurrentUser';
 
 interface DownloadProps {
   currUser?: CurrentUser | null;
@@ -25,7 +22,7 @@ export default function Download({ currUser }: DownloadProps) {
       return;
     }
 
-    if (currUser.downloadsCount < currUser.uploadsCount * 3) {
+    if (currUser.downloadCount < currUser.uploadCount * 3) {
       // Proceed with file download
       console.log('File is downloading...');
       // Simulate download and close popup
@@ -54,44 +51,54 @@ export default function Download({ currUser }: DownloadProps) {
       <span>Download</span>
     </button>
   );
-
-  return (
-    <>
-      <Popup open={isPopupOpen} onClose={() => setIsPopupOpen(false)} position="top center">
-        <div className="p-4 bg-white shadow-lg rounded-lg">
-          {currUser ? (
-            currUser.downloadsCount < currUser.uploadsCount * 3 ? (
-              <div>
-                {/* File downloading state */}
-                <p>Your file is downloading...</p>
-                {/* You can add a progress bar here */}
-              </div>
-            ) : (
-              <div>
-                <p>You have exceeded your download limit. Upload more files to download more.</p>
-                <button onClick={handleUploadClick} className="mt-2 bg-blue-500 text-white py-2 px-4 rounded">
-                  Upload Now
-                </button>
-		<button onClick={()=>setIsPopupOpen(false)} className="absolute top-2 right-2 text-gray-500 hover:text-gray-700">
-		 <IoClose size={24} />
-	      </button>
-              </div>
-            )
+return (
+  <>
+    <Popup open={isPopupOpen} onClose={() => setIsPopupOpen(false)} position="top center">
+      <div className="p-4 bg-white shadow-lg rounded-lg">
+        {currUser ? (
+          currUser.uploadCount === 0 ? (
+            <div>
+              <p>Looks like you haven't uploaded any files yet! To unlock your download access, simply upload a file. For every file you share, you can download up to 5 materials. Let's get sharing!</p>
+              <button onClick={handleUploadClick} className="mt-2 bg-blue-500 text-white py-2 px-4 rounded">
+                <Link href={'/upload'}>Upload Now</Link>
+              </button>
+              <button onClick={() => setIsPopupOpen(false)} className="absolute top-2 right-2 text-gray-500 hover:text-gray-700">
+                <IoClose size={24} />
+              </button>
+            </div>
+          ) : currUser.downloadCount < currUser.uploadCount * 3 ? (
+            <div>
+              {/* File downloading state */}
+              <p>Your file is downloading...</p>
+              {/* You can add a progress bar here */}
+            </div>
           ) : (
             <div>
-              <p>Please log in or sign up to download files.</p>
-              <button onClick={handleLoginClick} className="mt-2 bg-green-500 text-white py-2 px-4 rounded">
-                Log In / Sign Up
+              <p>You have exceeded your download limit. To unlock your download access, please upload more files. Remember, for every file you share, you can download up to 5 materials!</p>
+              <button onClick={handleUploadClick} className="mt-2 bg-blue-500 text-white py-2 px-4 rounded">
+                <Link href={'/upload'}>Upload Now</Link>
               </button>
-              <button onClick={()=>setIsPopupOpen(false)} className="absolute top-2 right-2 text-gray-500 hover:text-gray-700">
-	       <IoClose size={24} />
-	      </button>
+              <button onClick={() => setIsPopupOpen(false)} className="absolute top-2 right-2 text-gray-500 hover:text-gray-700">
+                <IoClose size={24} />
+              </button>
             </div>
-          )}
-        </div>
-      </Popup>
-      {DownloadButton}
-    </>
-  );
+          )
+        ) : (
+          <div>
+            <p>Please log in or sign up to download files.</p>
+            <button className="mt-2 bg-green-500 text-white py-2 px-4 rounded">
+              <Link href={'/auth'}>Log In / Sign Up</Link>
+            </button>
+            <button onClick={() => setIsPopupOpen(false)} className="absolute top-2 right-2 text-gray-500 hover:text-gray-700">
+              <IoClose size={24} />
+            </button>
+          </div>
+        )}
+      </div>
+    </Popup>
+    {DownloadButton}
+  </>
+);
+
 }
 

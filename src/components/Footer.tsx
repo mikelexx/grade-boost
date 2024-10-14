@@ -1,15 +1,5 @@
 import { FaTwitter, FaGithub, FaLinkedin } from "react-icons/fa";
 
-function Footer2() {
-  return (
-    <footer className="bg-white text-black py-4">
-      <div className="container mx-auto text-center">
-        © {new Date().getFullYear()} LearnPortal. All rights reserved.
-      </div>
-    </footer>
-  );
-}
-
 export default function Footer() {
   return (
     <footer className="bg-black text-white py-6">

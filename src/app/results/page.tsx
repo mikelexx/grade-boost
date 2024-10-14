@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import { FaDownload, FaSave, FaFolderOpen, FaShareAlt, FaEye} from "react-icons/fa"; // Icons from react-icons
 import ResultsPageNavBar from "@/components/ResultsPageNavBar";
+import Download from '@/components/Download';
 
 const mockResults = [
   {
@@ -124,10 +125,11 @@ export default function ResultsObsolete() {
                   <FaFolderOpen />
                   <span>Open</span>
                 </button>
-                <button className="flex items-center space-x-1 text-blue-500 hover:text-blue-700">
+		{/* <button className="flex items-center space-x-1 text-blue-500 hover:text-blue-700">
                   <FaDownload />
                   <span>Download</span>
-                </button>
+                </button> */}
+	       <Download/>
 
                 <button className="flex items-center space-x-1 text-green-500 hover:text-green-700">
                   <FaSave />
