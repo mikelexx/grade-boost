@@ -1,6 +1,7 @@
 import { getFirestore, doc, setDoc, getDoc, updateDoc, increment, DocumentReference, DocumentData } from 'firebase/firestore';
+import { getAuth, onAuthStateChanged, User} from 'firebase/auth';
 import app from '../firebaseConfig';
-
+const auth = getAuth(app);
 const db = getFirestore(app);
 
 interface UserData {
@@ -10,6 +11,13 @@ interface UserData {
 }
 
 export default class UserService {
+   static getCurrentUser() {
+    return auth.currentUser;
+  }
+  static onAuthStateChanged(callback: (user: User | null) => void) {
+    return onAuthStateChanged(auth, callback);
+  }
+
   // Function to get user data
   static async getUserData(uid: string): Promise<UserData | null> {
     try {
