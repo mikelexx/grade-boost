@@ -1,7 +1,19 @@
-export default function timeAgo(uploadDate: string | Date) {
+type FirestoreTimestamp = {
+  seconds: number;
+  nanoseconds: number;
+};
+
+export default function timeAgo(uploadDate: string | Date | FirestoreTimestamp) {
   const now = new Date();
-  const postedDate = new Date(uploadDate);
-  const diff = now.getTime() - postedDate.getTime();
+
+  // Check if uploadDate is a Firestore Timestamp
+  if (uploadDate && typeof uploadDate === 'object' && 'seconds' in uploadDate) {
+    uploadDate = new Date(uploadDate.seconds * 1000); // Convert Firestore Timestamp to Date
+  } else {
+    uploadDate = new Date(uploadDate); // Convert string or Date to Date if needed
+  }
+
+  const diff = now.getTime() - uploadDate.getTime();
 
   const seconds = Math.floor(diff / 1000);
   const minutes = Math.floor(seconds / 60);

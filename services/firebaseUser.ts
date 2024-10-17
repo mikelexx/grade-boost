@@ -1,12 +1,14 @@
-import { getFirestore, doc, setDoc, getDoc, updateDoc, increment, DocumentReference, DocumentData } from 'firebase/firestore';
-import { getAuth, onAuthStateChanged, User} from 'firebase/auth';
+import { getFirestore, doc, setDoc, getDoc, updateDoc,deleteDoc, increment, DocumentReference, DocumentData } from 'firebase/firestore';
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged,deleteUser, User} from 'firebase/auth';
 import app from '../firebaseConfig';
 const auth = getAuth(app);
 const db = getFirestore(app);
 
 interface UserData {
+  username?: string;
   email: string;
   downloadCount: number;
+  profileUrl?: string;
   uploadCount: number;
 }
 
@@ -37,13 +39,14 @@ export default class UserService {
   }
 
   // Function to create a new user document
-  static async createUserDocument(uid: string, email: string): Promise<void> {
+  static async createUserDocument(uid: string, email: string, photoURL: string | null): Promise<void> {
     try {
       const userDocRef: DocumentReference<DocumentData> = doc(db, 'users', uid);
       await setDoc(userDocRef, {
         email: email,
         downloadCount: 0,
         uploadCount: 0,
+	photoURL
       });
     } catch (error) {
       console.error('Error creating user document:', error);
@@ -72,5 +75,28 @@ export default class UserService {
       throw error;
     }
   }
+  static async reauthenticateUser(user: User, password: string): Promise<void> {
+    const auth = getAuth(app);
+    try {
+      // Use signInWithEmailAndPassword to re-authenticate
+      await signInWithEmailAndPassword(auth, user.email, password);
+    } catch (error) {
+      console.error('Error during re-authentication:', error);
+      throw error; // Throw the error to handle it in the calling function
+    }
+  }
+
+  static async deleteUser(user: User): Promise<void> {
+
+		  try {
+		    const userDocRef: DocumentReference<DocumentData> = doc(db, 'users', user.uid);
+		    await deleteDoc(userDocRef);
+		    await deleteUser(user);
+		  } catch (error) {
+		     console.error('Error deleting account:', error);
+		    throw error;
+		  }
+
+}
 }
 

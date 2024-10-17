@@ -1,8 +1,10 @@
+"use client"
 import Search from "@/components/Search";
 import Categories from "@/components/Categories";
 import RecentItems from "@/components/Recent";
 import Features from "@/components/Features";
 import NavBar from "@/components/NavBar";
+import { useRouter } from 'next/navigation'; // Use next/navigation for client components
 
 const fields = [
   { name: "Engineering", departments: ["Agriculture", "Electrical Engineering", "Mechanical Engineering"] },
@@ -14,7 +16,7 @@ const recentItems  = [
   {
     id: '1',
     title: "Electrical Engineering Assignment",
-    thumbnailUrl: "/images/fakeThumbnail.jpeg", // Fake thumbnail
+    thumbnailUrl: "/images/defaultThumbnail.jpeg", // Fake thumbnail
     materialType: 'Assignment',
     author: 'michael',
     uploadDate: new Date('07/06/2024')
@@ -22,7 +24,7 @@ const recentItems  = [
   {
     id: '2',
     title: "Biology Lecture Notes",
-    thumbnailUrl: "/images/fakeThumbnail.jpeg", // Fake thumbnail
+    thumbnailUrl: "/images/defaultThumbnail.jpeg", // Fake thumbnail
     materialType: 'Notes',
     author: 'lexx mike',
     uploadDate: new Date()
@@ -30,13 +32,18 @@ const recentItems  = [
   {
     id: '3',
     title: "Calculus Past Paper",
-    thumbnailUrl: "/images/fakeThumbnail.jpeg", // Fake thumbnail
+    thumbnailUrl: "/images/defaultThumbnail.jpeg", // Fake thumbnail
     materialType: 'pastPaper',
     author: 'murithi',
     uploadDate: new Date()
   },
 ];
 export default function Home() {
+	const router = useRouter();
+
+	const handleSearch = (query: string) => {
+		router.push(`/results?page=${encodeURIComponent(query)}`); // Navigate to the results page with the query
+	};
   return (
     <>
     <NavBar/>
@@ -49,7 +56,7 @@ export default function Home() {
             Access notes, assignments, past papers, and more—everything you need to succeed.
           </p>
         </div>
-        <Search />
+        <Search onSearch={handleSearch} />
       </section>
       <Categories fields={fields}/>
       <RecentItems recentItems={recentItems}/>

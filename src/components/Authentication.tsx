@@ -31,11 +31,11 @@ export default function Authentication() {
     setLoading(true);
     try {
       const result = await signInWithPopup(auth, googleProvider);
-      const { uid, email}  = result.user;
+      const { uid, email, photoURL}  = result.user;
       console.log('Google sign-in successful:', result.user);
       const userData = await UserService.getUserData(uid);
       if(!userData){
-	      await UserService.createUserDocument(uid, email ?? '')
+	      await UserService.createUserDocument(uid, email ?? '', photoURL ?? '')
       }
       router.push('/'); // Redirect to the homepage or any other page after successful sign-in
     } catch (error) {
@@ -66,10 +66,10 @@ export default function Authentication() {
 
     try {
       const result = await createUserWithEmailAndPassword(auth, email, password);
-      console.log('Email sign-up successful:', result.user);
+      console.log('Email sign-up successful:');
       const uid = result.user.uid;
-      await UserService.createUserDocument(uid, email)
-
+      const photoURL = result.user.photoURL ?? null;
+      await UserService.createUserDocument(uid, email, photoURL);
       router.push('/'); // Redirect to the homepage or another page
       setErrorMessage('');
 

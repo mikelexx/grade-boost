@@ -1,151 +1,150 @@
-import Image from 'next/image';
-import { FaDownload, FaSave, FaFolderOpen, FaShareAlt, FaEye} from "react-icons/fa"; // Icons from react-icons
-import ResultsPageNavBar from "@/components/ResultsPageNavBar";
-import Download from '@/components/Download';
+"use client"
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
+import ResultsPageNavBar from '@/components/ResultsPageNavBar';
+import SearchResultCard from '@/components/SearchResultCard';
+import FileService from '../../../services/firebaseFile';
+import { Result } from '@/types/Result';
 
-const mockResults = [
-  {
-    id: 1,
-    title: "Math Past Paper",
-    materialType: "pastpapers",
-    downloads: "3k",
-    time: "2 days ago",
-    thumbnailUrl: "/images/fakeThumbnail.jpeg",
-    authorImg: "/images/small.jpeg",
-  },
-  {
-    id: 2,
-    title: "Physics Assignment",
-    materialType: "assignments",
-    downloads: "2k",
-    time: "3 days ago",
-    thumbnailUrl: "/images/fakeThumbnail.jpeg",
-    authorImg: "/images/small.jpeg",
+export default function ResultsPage() {
+  const searchParams = useSearchParams();
+  const query = searchParams.get('page');
+  const [results, setResults] = useState<Result[]>([]);
+  const [filteredResults, setFilteredResults] = useState<Result[]>([]);
+  const [loading, setLoading] = useState(false);
 
-  },
-  {
-    id: 3,
-    title: "Physics Assignment",
-    materialType: "assignments",
-    downloads: "2k",
-    time: "3 days ago",
-    thumbnailUrl: "/images/fakeThumbnail.jpeg",
-    authorImg: "/images/small.jpeg",
-  },
-  {
-    id: 4,
-    title: "Physics Assignment",
-    materialType: "assignments",
-    downloads: "2k",
-    time: "3 days ago",
-    thumbnailUrl: "/images/fakeThumbnail.jpeg",
-    authorImg: "/images/small.jpeg",
-  },
-  {
-    id: 5,
-    title: "Physics Assignment",
-    materialType: "assignments",
-    downloads: "2k",
-    time: "3 days ago",
-    thumbnailUrl: "/images/fakeThumbnail.jpeg",
-    authorImg: "/images/small.jpeg",
-  },
+  const [materialCounts, setMaterialCounts] = useState({
+    pastPapers: 0,
+    assignments: 0,
+    notes: 0,
+    solutions: 0,
+  });
 
-];
+  const [selectedTypes, setSelectedTypes] = useState<string[]>([]); // State for selected checkboxes
 
+  useEffect(() => {
+    if (query) {
+      handleSearch(query);
+    }
+  }, [query]);
 
-export default function ResultsObsolete() {
+  const handleSearch = async (query: string) => {
+    setLoading(true);
+    try {
+      const searchResults = await FileService.searchMaterials(query);
+      setResults(searchResults);
+
+      // Count materials by type
+      const counts = searchResults.reduce(
+        (acc, result) => {
+          if (result.materialType === 'pastpapers') acc.pastPapers++;
+          else if (result.materialType === 'assignments') acc.assignments++;
+          else if (result.materialType === 'notes') acc.notes++;
+          else if (result.materialType === 'solutions') acc.solutions++;
+          return acc;
+        },
+        { pastPapers: 0, assignments: 0, notes: 0, solutions: 0 }
+      );
+      setMaterialCounts(counts);
+      setFilteredResults(searchResults); // Initialize with all results
+    } catch (error) {
+      console.error('Error searching materials:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Handle checkbox change
+  const handleCheckboxChange = (type: string) => {
+    const updatedSelectedTypes = selectedTypes.includes(type)
+      ? selectedTypes.filter((t) => t !== type)
+      : [...selectedTypes, type];
+
+    setSelectedTypes(updatedSelectedTypes);
+
+    // Filter results based on selected types
+    if (updatedSelectedTypes.length > 0) {
+      const filtered = results.filter((result) =>
+        updatedSelectedTypes.includes(result.materialType)
+      );
+      setFilteredResults(filtered);
+    } else {
+      setFilteredResults(results); // Show all if no checkbox selected
+    }
+  };
+
   return (
     <>
-      <ResultsPageNavBar />
-      <div className='flex-col pt-16 bg-white p-6'>
-      <h1 className='break-words text-center text-center text-2xl md:text-3xl font-semibold mb-6'>Results for 'Ecu 404 maths pastpapers' </h1>
-     <div className="flex gap-6 bg-white">
-        {/* Left Sidebar */}
-	<aside className="sticky top-20 w-1/4  p-6 mb-auto border border-black border-opacity-20">
-
-	  <h3 className="text-xl font-semibold mb-4">Material Types</h3>
-	  <div>
-	    <label className="flex justify-between items-center py-2">
-	      <span>Past Papers (5)</span>
-	      <input type="checkbox" className="self-centerform-checkbox text-blue-600" value="pastpapers" />
-	    </label>
-	    <hr className="border-gray-300" />
-	    <label className="flex justify-between items-center py-2">
-	      <span>Assignments (3)</span>
-	      <input type="checkbox" className="form-checkbox text-blue-600" value="assignments" />
-	    </label>
-	    <hr className="border-gray-300" />
-	    <label className="flex justify-between items-center py-2">
-	      <span>Notes (8)</span>
-	      <input type="checkbox" className="form-checkbox text-blue-600" value="notes" />
-	    </label>
-	    <hr className="border-gray-300" />
-	    <label className="flex justify-between items-center py-2">
-	      <span>Solutions (6)</span>
-	      <input type="checkbox" className="form-checkbox text-blue-600" value="solutions" />
-	    </label>
-	  </div>
-	</aside>
-
-        {/* Right Results Section */}
-        <section className="w-3/4 h-full overflow-y-auto">
-          {mockResults.map((result) => (
-            <div key={result.id}
-                 className="bg-white p-6 rounded-lg shadow mb-6 flex flex-col md:flex-row">
-              {/* Image thumbnail */}
-              <Image
-                src={result.thumbnailUrl}
-                alt="Material Thumbnail"
-                width={500}
-                height={300}
-                className="w-full h-48 rounded-lg object-cover mb-4 md:mb-0 md:w-1/3"
-              />
-
-              {/* Info Section */}
-              <div className="flex flex-col justify-between w-full md:ml-6">
-                <div className="flex items-center mb-4">
-                  <Image
-                    src={result.authorImg}
-                    alt="Author"
-                    width={40}
-                    height={40}
-                    className="w-10 h-10 rounded-full mr-4"
-                  />
-                  <div>
-                    <h4 className="text-lg font-semibold">{result.title}</h4>
-                    <p className="text-gray-500 text-sm">
-                      {result.downloads} downloads • {result.time}
-                    </p>
-                  </div>
-                </div>
-              {/* Action buttons */}
-              <div className="flex items-center space-x-4">
-                <button className="flex items-center space-x-1 text-yellow-500 hover:text-yellow-700">
-                  <FaFolderOpen />
-                  <span>Open</span>
-                </button>
-		{/* <button className="flex items-center space-x-1 text-blue-500 hover:text-blue-700">
-                  <FaDownload />
-                  <span>Download</span>
-                </button> */}
-	       <Download/>
-
-                <button className="flex items-center space-x-1 text-green-500 hover:text-green-700">
-                  <FaSave />
-                  <span>Save</span>
-                </button>
-		<button className="flex items-center space-x-1 text-blue-500 hover:text-blue-700">
-		<FaShareAlt className="mr-2" /> Share
-		</button>
-		{/*kebab-menu*/}
-                  <button className="text-gray-400 text-xl">⋮</button>
-              </div>
-              </div>
+      <ResultsPageNavBar onSearch={handleSearch} />
+      <div className="flex-col pt-16 bg-white p-6">
+        <h1 className="break-words text-center text-2xl md:text-3xl font-semibold mb-6">
+          {loading ? 'Searching for ' : 'Results for '} '{query}'
+        </h1>
+        <div className="flex gap-6 bg-white">
+          {/* Left Sidebar */}
+          <aside className="sticky top-20 w-full md:w-1/4 p-6 mb-auto border border-black border-opacity-20">
+            <h3 className="text-xl font-semibold mb-4">Material Types</h3>
+            <div>
+              <label className="flex justify-between items-center py-2 w-full flex-wrap">
+                <span>Past Papers ({materialCounts.pastPapers})</span>
+                <input
+                  type="checkbox"
+                  className="form-checkbox text-blue-600"
+                  value="pastpapers"
+                  onChange={() => handleCheckboxChange('pastpapers')}
+                />
+              </label>
+              <hr className="border-gray-300" />
+              <label className="flex justify-between items-center py-2 w-full flex-wrap">
+                <span>Assignments ({materialCounts.assignments})</span>
+                <input
+                  type="checkbox"
+                  className="form-checkbox text-blue-600"
+                  value="assignments"
+                  onChange={() => handleCheckboxChange('assignments')}
+                />
+              </label>
+              <hr className="border-gray-300" />
+              <label className="flex justify-between items-center py-2 w-full flex-wrap">
+                <span>Notes ({materialCounts.notes})</span>
+                <input
+                  type="checkbox"
+                  className="form-checkbox text-blue-600"
+                  value="notes"
+                  onChange={() => handleCheckboxChange('notes')}
+                />
+              </label>
+              <hr className="border-gray-300" />
+              <label className="flex justify-between items-center py-2 w-full flex-wrap">
+                <span>Solutions ({materialCounts.solutions})</span>
+                <input
+                  type="checkbox"
+                  className="form-checkbox text-blue-600"
+                  value="solutions"
+                  onChange={() => handleCheckboxChange('solutions')}
+                />
+              </label>
             </div>
-          ))}
-        </section>
-      </div>
+          </aside>
+
+          {/* Right Results Section */}
+          <section className="w-3/4 h-full min-h-screen overflow-y-auto">
+            {loading ? (
+              <div className="flex justify-center items-center h-full">
+                <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500 border-solid"></div>
+              </div>
+            ) : filteredResults.length > 0 ? (
+              filteredResults.map((result) => (
+                <SearchResultCard key={result.id} result={result} />
+              ))
+            ) : (
+              <div className="h-96 flex flex-col items-center justify-center">
+                <p className="text-2xl font-semibold text-gray-500 mb-4">No results found</p>
+                <p className="text-gray-400">Try a different search or check your spelling.</p>
+              </div>
+            )}
+          </section>
+        </div>
       </div>
     </>
   );

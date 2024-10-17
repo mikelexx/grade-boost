@@ -28,19 +28,26 @@ export default function RecentItems({ recentItems }: { recentItems: RecentItem[]
 
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
-        // Fetch the user document from Firestore using the new UserService
-        const userData = await UserService.getUserData(user.uid);
-        if (userData) {
-          setCurrUser({
-            downloadCount: userData.downloadCount,
-            uploadCount: userData.uploadCount,
-            uid: user.uid
-          });
-        }
-      } else {
-        setCurrUser(null); // No authenticated user
-      }
-    });
+	      try{
+		      const userData = await UserService.getUserData(user.uid);
+		if (userData) {
+		  setCurrUser({
+		    downloadCount: userData.downloadCount,
+		    uploadCount: userData.uploadCount,
+		    uid: user.uid
+		  });
+		}
+	       else {
+		setCurrUser(null); // No authenticated user
+	      }
+
+	      }catch(error){
+		      console.error('Error occured:', error);
+
+	      }
+
+      }}
+  );
 
     setHydrated(true); // Ensure component is hydrated
 

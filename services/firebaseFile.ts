@@ -1,7 +1,9 @@
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { getFirestore, collection, addDoc } from 'firebase/firestore';
+import { getFirestore, collection, addDoc, getDocs, query, where } from 'firebase/firestore';
 import app from '../firebaseConfig'; // Assuming the Firebase config is correctly set
 import { v4 as uuidv4 } from 'uuid'; // Import the uuid function
+import UserService from './firebaseUser';
+import { Result } from '@/types/Result';
 import * as pdfjs from 'pdfjs-dist';
 
 const storage = getStorage(app);
@@ -19,19 +21,21 @@ export default class FileService {
       // Upload the PDF file to Firebase Storage
       await uploadBytes(storageRef, file);
 
-      // Get the download URL of the uploaded PDF
       const downloadURL = await getDownloadURL(storageRef);
 
-      // Create a thumbnail for the PDF
       const thumbnailUrl = await FileService.createThumbnail(file);
 
-      // Save document to Firestore
+      //to simulate fuzzy search because now firebase wants me to pay
+      const tags = file.name.split(/[\s-]+/).map(word => word.toLowerCase()); // Split by spaces and hyphens, and lowercase
+      if(courseCode) tags.push(courseCode.toLowerCase()); // Add courseCode to the tags
+
       await addDoc(collection(db, "materials"), {
-        userId,
+        authorId: userId,
         fileName: file.name,
         materialType,
         courseCode,
         fieldOfStudy,
+	fileNameTags: tags,
         fileUrl: downloadURL,
         thumbnailUrl: thumbnailUrl, // Add the thumbnail URL to the document
         uploadedAt: new Date(),
@@ -43,7 +47,37 @@ export default class FileService {
       throw error;
     }
   }
+static async searchMaterials(queryStr: string) {
+    const materialsRef = collection(db, "materials");
 
+
+    const queryParam = query(
+      materialsRef,
+      where('fileNameTags', 'array-contains', queryStr.toLowerCase())
+    );
+    const querySnapshot = await getDocs(queryParam);
+
+  // Create an array to hold the materials
+  const materials = await Promise.all(querySnapshot.docs.map(async (doc) => {
+    const material = {
+      id: doc.id,
+      ...doc.data(),
+    };
+
+    // Populate author data asynchronously if available
+        if (material.authorId) {
+          const userData = await UserService.getUserData(material.authorId);
+          if (userData) {
+            material.authorPhotoUrl = userData.photoURL || '/images/defaultUser.png';
+            material.authorName = userData.username || '';
+          }
+        }
+        return material;
+      })
+    );
+
+    return materials; // Return the array of materials with author info
+  }
   static async createThumbnail(file: File): Promise<string> {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();

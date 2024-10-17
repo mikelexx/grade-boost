@@ -49,7 +49,7 @@ export default function Download({ currUser }: DownloadProps) {
   const DownloadButton = (
     <button onClick={handleDownloadClick} className="flex items-center space-x-1 text-blue-500 hover:text-blue-700">
       <FaDownload />
-      <span>Download</span>
+      <span className='hidden sm:inline'>Download</span>
     </button>
   );
 return (
