@@ -14,7 +14,16 @@ interface UserData {
 
 export default class UserService {
    static getCurrentUser() {
+	   console.log('getCurrentUser called')
     return auth.currentUser;
+
+  }
+  static getCurrentUserPromise(){
+	  return new Promise((resolve) => {
+      onAuthStateChanged(auth, (user) => {
+        resolve(user);
+      });
+    });
   }
   static onAuthStateChanged(callback: (user: User | null) => void) {
     return onAuthStateChanged(auth, callback);

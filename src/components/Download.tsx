@@ -6,16 +6,20 @@ import { FaDownload } from "react-icons/fa"; // Icons from react-icons
 import { IoClose } from 'react-icons/io5';
 import Link from 'next/link';
 import { CurrentUser } from '@/types/CurrentUser';
+import FileService from '../../services/firebaseFile';
+
+
 
 interface DownloadProps {
   currUser?: CurrentUser | null;
+  fileUrl ?: string
 }
 
-export default function Download({ currUser }: DownloadProps) {
+export default function Download({ currUser, fileUrl }: DownloadProps) {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
 
-  const handleDownloadClick = () => {
+  const handleDownloadClick = async () => {
     if (!currUser) {
       // Show a message asking the user to log in or sign up
       setIsPopupOpen(true);
@@ -26,7 +30,15 @@ export default function Download({ currUser }: DownloadProps) {
       // Proceed with file download
       console.log(`uploads ${currUser.uploadCount}, downlaods: ${currUser.downloadCount} `);
       console.log('File is downloading...');
-      // Simulate download and close popup
+      // create a link to download file and click it
+     try {
+	     await FileService.downloadFile(fileUrl || '');
+	     setIsPopupOpen(false);
+	     console.log('download initiated sucessfully');
+      } catch (error) {
+        console.error('Error downloading file:', error);
+      }
+
       setIsPopupOpen(false);
     } else {
       // Show popup to upload more files

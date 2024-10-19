@@ -1,6 +1,5 @@
-//intuition is to have a diff navbar ui for the signed in user
+import UserService from "../../../services/firebaseUser"
+import SavedMaterials from "@/components/SavedMaterial"
 export default function Me(){
-	return <>
-	<h1>THIS IS WHERE IS SEE MY DOWNLOADS AND SAVED SHIT</h1>
-	</>
+	 return <><SavedMaterials /></>
 }

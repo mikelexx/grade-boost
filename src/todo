@@ -1,5 +1,4 @@
-Go backend Mode from tomorrow
-	CheckOUt apis in nextjs
-	Implement UI and Backend for authentication
-	Viewing will be restricted to those with acceptable download count
-	Saving for users
+-IMPlemente actual downloading and saving
+-design an Ui visual component for + uploading
+-saved materials section
+-Host the shit

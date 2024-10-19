@@ -1,9 +1,9 @@
-import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { getFirestore, collection, addDoc, getDocs, query, where } from 'firebase/firestore';
+import { getStorage, getBlob, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { getFirestore, collection, addDoc,doc, getDocs,deleteDoc, getDoc, query, where, orderBy, limit } from 'firebase/firestore';
+
 import app from '../firebaseConfig'; // Assuming the Firebase config is correctly set
 import { v4 as uuidv4 } from 'uuid'; // Import the uuid function
 import UserService from './firebaseUser';
-import { Result } from '@/types/Result';
 import * as pdfjs from 'pdfjs-dist';
 
 const storage = getStorage(app);
@@ -47,6 +47,112 @@ export default class FileService {
       throw error;
     }
   }
+static async downloadFile(fileUrl: string): Promise<void> {
+    try {
+      // Reference the file in Firebase Storage
+      const fileRef = ref(storage, fileUrl);
+
+      // Fetch the file as a Blob
+      const blob = await getBlob(fileRef);
+
+      // Create a download link for the file
+      const link = document.createElement("a");
+      link.href = window.URL.createObjectURL(blob);
+      link.download = fileUrl.split("/").pop() || "download"; // Set the filename
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      console.log("File downloaded successfully");
+    } catch (error) {
+      console.error("Error downloading file:", error);
+      throw error; // Re-throw the error for the calling component to handle
+    }
+  }
+static async saveMaterial(fileId: string, userId: string) {
+  try {
+    const savedRef = collection(db, "savedMaterials");
+
+    const querySnapshot = await getDocs(
+      query(savedRef, where("userId", "==", userId), where("fileId", "==", fileId))
+    );
+
+    if (!querySnapshot.empty) {
+      console.log("Material is already saved.");
+      return;
+    }
+    await addDoc(savedRef, {
+      userId: userId,
+      fileId: fileId,
+      savedAt: new Date(),
+    });
+
+    console.log(`Material saved successfully for userId ${userId}`);
+  } catch (error) {
+
+	  console.error(`Error saving material for userId ${userId}:`, error);
+    throw error;
+  }
+}
+static async getSavedMaterials(userId: string) {
+  try {
+    const savedRef = collection(db, "savedMaterials");
+    const querySnapshot = await getDocs(
+      query(savedRef, where("userId", "==", userId))
+    );
+    if (querySnapshot.empty) {
+	    console.log(`No saved materials found for userId ${userId}.`);
+      return [];
+    }
+
+    const savedMaterialsPromises = querySnapshot.docs.map(async (savedMaterialDoc) => {
+      const fileId = savedMaterialDoc.data().fileId;
+      const materialDoc = await getDoc(doc(db, "materials", fileId));
+      console.log('material doc looks like', materialDoc.data());
+      if (materialDoc.exists()) {
+        return {id: materialDoc.id,  ...materialDoc.data() };
+      } else {
+        console.error(`Material with ID ${fileId} not found in the materials collection.`);
+        return null;
+      }
+    });
+    const savedMaterials = await Promise.all(savedMaterialsPromises);
+    // Filter out any null values where the material was not found
+    return savedMaterials.filter(material => material !== null);
+  } catch (error) {
+    console.error("Error getting saved materials:", error);
+    throw error;
+  }
+}
+static async removeSavedMaterial(fileId: string, userId: string) {
+	console.log('called removeSavedMaterial');
+  try {
+    const savedRef = collection(db, "savedMaterials");
+
+    const querySnapshot = await getDocs(
+
+	    query(savedRef, where("userId", "==", userId), where("fileId", "==", fileId))
+    );
+
+    if (querySnapshot.empty) {
+      console.log("Material not found in saved materials.");
+      return;
+    }
+
+    // Assuming only one document for each saved material
+    const docId = querySnapshot.docs[0].id;
+
+    await deleteDoc(doc(db, "savedMaterials", docId));
+
+    console.log("Saved material removed successfully.");
+  } catch (error) {
+    console.error("Error removing saved material:", error);
+    throw error;
+  }
+}
+
+
+
 static async searchMaterials(queryStr: string) {
     const materialsRef = collection(db, "materials");
 
@@ -78,6 +184,55 @@ static async searchMaterials(queryStr: string) {
 
     return materials; // Return the array of materials with author info
   }
+  static async getRecentMaterials(limitCount: number = 5) {
+  const materialsRef = collection(db, "materials");
+
+  const q = query(materialsRef, orderBy('uploadedAt', 'desc'),limit(limitCount));
+  const querySnapshot = await getDocs(q);
+
+  const recentMaterials = await Promise.all(
+    querySnapshot.docs.map(async (doc) => {
+      const material = {
+        id: doc.id,
+        ...doc.data(),
+      };
+
+      // Populate author data asynchronously if available
+      if (material.authorId) {
+        const userData = await UserService.getUserData(material.authorId);
+        if (userData) {
+          material.authorPhotoUrl = userData.photoURL || '/images/defaultUser.png';
+          material.authorName = userData.username || '';
+        }
+      }
+      return material;
+    })
+  );
+
+  return recentMaterials;
+}
+static async searchFilesByCategory(category: string) {
+  const materialsRef = collection(db, 'materials'); // Assume 'materials' is your Firestore collection
+
+  // Query for files where fileTags or fieldOfStudy contains the category
+
+      const categoryArray = category.split(/[\s-]+/).map(word => word.toLowerCase()); // Split by spaces and hyphens, and lowercase
+      const q = query(
+	      materialsRef,
+	      ...categoryArray.map(word => where('fileTags', 'array-contains', word)), // Apply array-contains for each word
+		      where('fieldOfStudy', '==', category) // Field of study match
+      );
+
+
+  const querySnapshot = await getDocs(q);
+
+  const materials = querySnapshot.docs.map(doc => ({
+    id: doc.id,
+    ...doc.data()
+  }));
+
+  return materials;
+}
   static async createThumbnail(file: File): Promise<string> {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -113,5 +268,8 @@ static async searchMaterials(queryStr: string) {
       reader.readAsArrayBuffer(file);
     });
   }
+  // In firebaseFile.ts
+
+
 }
 

@@ -12,32 +12,6 @@ const fields = [
   { name: "Maths", departments: ["Algebra", "Calculus", "Basic Math", "Geometry", "Precalculus"] },
   {name: 'Medicine', departments: []}
 ];
-const recentItems  = [
-  {
-    id: '1',
-    title: "Electrical Engineering Assignment",
-    thumbnailUrl: "/images/defaultThumbnail.jpeg", // Fake thumbnail
-    materialType: 'Assignment',
-    author: 'michael',
-    uploadDate: new Date('07/06/2024')
-  },
-  {
-    id: '2',
-    title: "Biology Lecture Notes",
-    thumbnailUrl: "/images/defaultThumbnail.jpeg", // Fake thumbnail
-    materialType: 'Notes',
-    author: 'lexx mike',
-    uploadDate: new Date()
-  },
-  {
-    id: '3',
-    title: "Calculus Past Paper",
-    thumbnailUrl: "/images/defaultThumbnail.jpeg", // Fake thumbnail
-    materialType: 'pastPaper',
-    author: 'murithi',
-    uploadDate: new Date()
-  },
-];
 export default function Home() {
 	const router = useRouter();
 
@@ -59,7 +33,7 @@ export default function Home() {
         <Search onSearch={handleSearch} />
       </section>
       <Categories fields={fields}/>
-      <RecentItems recentItems={recentItems}/>
+      <RecentItems />
       <Features/>
 
     </>

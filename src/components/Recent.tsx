@@ -5,24 +5,28 @@ import Download from "./Download";
 import Image from "next/image";
 import timeAgo from "../../utils";
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import FileService from "../../services/firebaseFile";
 import UserService from "../../services/firebaseUser";
 import { CurrentUser } from "@/types/CurrentUser";
-
-interface RecentItem {
-  id: string;
-  title: string;
-  thumbnailUrl: string;
-  materialType: string;
-  author: string;
-  uploadDate: Date;
-}
+import { Result } from "@/types/Result";
+import OpenFile from "./OpenFile";
+import Save from './Save';
 
 
 
-export default function RecentItems({ recentItems }: { recentItems: RecentItem[] }) {
+export default function RecentItems() {
+	console.log('RecentItems Component called');
   const [currUser, setCurrUser] = useState<CurrentUser | null>(null);
   const [hydrated, setHydrated] = useState(false);
+  const [recentItems, setRecentItems] = useState<Result[]>([])
+  const [isOpenFileOpen, setOpenFileOpen] = useState(false); // State to manage modal visibility
 
+  const handleOpen = () => {
+	  setOpenFileOpen(true); // Open the modal
+  };
+  const handleClose = () => {
+	  setOpenFileOpen(false); // Close the modal
+  };
   useEffect(() => {
     const auth = getAuth();
 
@@ -54,12 +58,26 @@ export default function RecentItems({ recentItems }: { recentItems: RecentItem[]
     return () => unsubscribe(); // Clean up listener
   }, []);
 
+  useEffect(() => {
+    // Fetch recent materials from FileService
+    const fetchRecentItems = async () => {
+      try {
+        const recentMaterials = await FileService.getRecentMaterials(5); // Limit to 5 items
+        setRecentItems(recentMaterials);
+      } catch (error) {
+        console.error("Error fetching recent materials:", error);
+      }
+    };
+
+    fetchRecentItems();
+  }, []);
+
   if (!hydrated) {
     return null; // Avoid server/client mismatch
   }
-
-  return (
-    recentItems && (
+  console.log('recent items:', recentItems);
+return (
+    recentItems.length > 0 && (
       <section>
         <h2 className="text-center text-2xl font-semibold mb-6 mx-auto">Recent Activities</h2>
         <div className="grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-6">
@@ -70,25 +88,25 @@ export default function RecentItems({ recentItems }: { recentItems: RecentItem[]
             >
               <div className="flex items-center space-x-4">
                 <Image
-                  src="/images/small.jpeg"
-                  alt={`${item.author} profile picture`}
+                  src={item.authorPhotoUrl || "/images/small.jpeg"}
+                  alt={`${item.authorName} profile picture`}
                   width={40}
                   height={40}
                   className="rounded-full"
                 />
                 <p>
-                  <span className="font-semibold text-green">{item.author}</span> posted{" "}
+                  <span className="font-semibold text-green">{item.authorName || 'Anonymous User'}</span> posted{" "}
                   {item.materialType.endsWith('s') ? "" : ['a', 'e', 'i', 'o', 'u'].includes(item.materialType.at(0).toLowerCase()) ? 'an' : 'a'}{" "}
                   {item.materialType}
                   <br />
-                  <span className="font-semibold">{timeAgo(item.uploadDate)} </span>
+                  <span className="font-semibold">{timeAgo(item.uploadedAt.toDate())} </span>
                 </p>
               </div>
 
               <div className="w-full">
                 <Image
                   src={item.thumbnailUrl}
-                  alt={`${item.title} thumbnail`}
+                  alt={`${item.fileName} thumbnail`}
                   width={400}
                   height={400}
                   className="w-full h-auto object-cover rounded"
@@ -96,21 +114,28 @@ export default function RecentItems({ recentItems }: { recentItems: RecentItem[]
               </div>
 
               <div className="w-full">
-                <p className="font-bold text-lg mb-2">{item.title}</p>
+                <p className="font-bold text-lg mb-2">{item.fileName}</p>
                 <hr className="border-t border-gray-300 mb-4" />
                 <div className="flex items-center space-x-4">
                   <Download currUser={currUser} />
+
+		  {/*
                   <button className="flex items-center space-x-1 text-green-500 hover:text-green-700">
                     <FaSave />
                     <span>Save</span>
                   </button>
 
-                  <button className="flex items-center space-x-1 text-yellow-500 hover:text-yellow-700">
+			  */}
+		  <Save currUser={UserService.getCurrentUser()} fileId={item.id} />
+
+                  <button onClick={handleOpen} className="flex items-center space-x-1 text-yellow-500 hover:text-yellow-700">
                     <FaFolderOpen />
                     <span>Open</span>
                   </button>
                 </div>
               </div>
+		   {/* OpenFile for opening the file */}
+		   <OpenFile isOpen={isOpenFileOpen} onClose={handleClose} fileUrl={item.fileUrl} />
             </div>
           ))}
         </div>

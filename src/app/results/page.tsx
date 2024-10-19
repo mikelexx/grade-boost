@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import ResultsPageNavBar from '@/components/ResultsPageNavBar';
@@ -9,9 +9,11 @@ import { Result } from '@/types/Result';
 export default function ResultsPage() {
   const searchParams = useSearchParams();
   const query = searchParams.get('page');
+  const category = searchParams.get('category');
   const [results, setResults] = useState<Result[]>([]);
   const [filteredResults, setFilteredResults] = useState<Result[]>([]);
   const [loading, setLoading] = useState(false);
+  const [displayedQuery, setDisplayedQuery] = useState(''); // New state for displayed query
 
   const [materialCounts, setMaterialCounts] = useState({
     pastPapers: 0,
@@ -22,31 +24,51 @@ export default function ResultsPage() {
 
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]); // State for selected checkboxes
 
+      const countMaterialsByType = ()=>{
+	      const counts = searchResults.reduce(
+		(acc, result) => {
+		  if (result.materialType === 'pastpapers') acc.pastPapers++;
+		  else if (result.materialType === 'assignments') acc.assignments++;
+		  else if (result.materialType === 'notes') acc.notes++;
+		  else if (result.materialType === 'solutions') acc.solutions++;
+		  return acc;
+		},
+		{ pastPapers: 0, assignments: 0, notes: 0, solutions: 0 }
+	      );
+	      setMaterialCounts(counts);
+
+      }
+
   useEffect(() => {
     if (query) {
       handleSearch(query);
     }
-  }, [query]);
+    if(category){
+	    handleCategorySearch(category);
+    }
+  }, [query, category]);
 
+  const handleCategorySearch = async (category: string) =>{
+	  setDisplayedQuery(category);
+	  setLoading(true);
+	  try {
+		  const searchResults = await FileService.searchFilesByCategory(category);
+		  setResults(searchResults);
+		  setFilteredResults(searchResults); // Initialize with all results
+		  countMaterialsByType();
+
+	  }catch(error){
+
+	  }
+  }
   const handleSearch = async (query: string) => {
+    setDisplayedQuery(query);
     setLoading(true);
     try {
       const searchResults = await FileService.searchMaterials(query);
       setResults(searchResults);
-
-      // Count materials by type
-      const counts = searchResults.reduce(
-        (acc, result) => {
-          if (result.materialType === 'pastpapers') acc.pastPapers++;
-          else if (result.materialType === 'assignments') acc.assignments++;
-          else if (result.materialType === 'notes') acc.notes++;
-          else if (result.materialType === 'solutions') acc.solutions++;
-          return acc;
-        },
-        { pastPapers: 0, assignments: 0, notes: 0, solutions: 0 }
-      );
-      setMaterialCounts(counts);
       setFilteredResults(searchResults); // Initialize with all results
+      countMaterialsByType();
     } catch (error) {
       console.error('Error searching materials:', error);
     } finally {
@@ -78,7 +100,7 @@ export default function ResultsPage() {
       <ResultsPageNavBar onSearch={handleSearch} />
       <div className="flex-col pt-16 bg-white p-6">
         <h1 className="break-words text-center text-2xl md:text-3xl font-semibold mb-6">
-          {loading ? 'Searching for ' : 'Results for '} '{query}'
+          {loading ? 'Searching for ' : 'Results for '} '{true && displayedQuery}'
         </h1>
         <div className="flex gap-6 bg-white">
           {/* Left Sidebar */}
@@ -149,3 +171,4 @@ export default function ResultsPage() {
     </>
   );
 }
+
