@@ -73,7 +73,6 @@ async function fetchSavedMaterials() {
 	  const fetchSavedMaterials = async () => {
 		  if (currUser) {
 			  setIsLoading(true);
-			  console.log('Current user is:', currUser);
 			  try {
 				  // Fetch saved materials for the current user
 				  const materials = await FileService.getSavedMaterials(currUser.uid);
