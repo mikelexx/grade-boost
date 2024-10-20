@@ -64,8 +64,6 @@ static async downloadFile(fileName: string, fileUrl: string): Promise<void> {
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-
-      console.log("File downloaded successfully");
     } catch (error) {
       console.error("Error downloading file:", error);
       throw error; // Re-throw the error for the calling component to handle
@@ -88,8 +86,6 @@ static async saveMaterial(fileId: string, userId: string) {
       fileId: fileId,
       savedAt: new Date(),
     });
-
-    console.log(`Material saved successfully for userId ${userId}`);
   } catch (error) {
 
 	  console.error(`Error saving material for userId ${userId}:`, error);
@@ -110,11 +106,9 @@ static async getSavedMaterials(userId: string) {
     const savedMaterialsPromises = querySnapshot.docs.map(async (savedMaterialDoc) => {
       const fileId = savedMaterialDoc.data().fileId;
       const materialDoc = await getDoc(doc(db, "materials", fileId));
-      console.log('material doc looks like', materialDoc.data());
       if (materialDoc.exists()) {
         return {id: materialDoc.id,  ...materialDoc.data() };
       } else {
-        console.error(`Material with ID ${fileId} not found in the materials collection.`);
         return null;
       }
     });
@@ -137,7 +131,6 @@ static async removeSavedMaterial(fileId: string, userId: string) {
     );
 
     if (querySnapshot.empty) {
-      console.log("Material not found in saved materials.");
       return;
     }
 
@@ -146,7 +139,6 @@ static async removeSavedMaterial(fileId: string, userId: string) {
 
     await deleteDoc(doc(db, "savedMaterials", docId));
 
-    console.log("Saved material removed successfully.");
   } catch (error) {
     console.error("Error removing saved material:", error);
     throw error;
@@ -214,10 +206,8 @@ static async searchMaterials(queryStr: string) {
   return recentMaterials;
 }
 static async searchFilesByCategory(category: string) {
-	console.log('called searchFilesByCategory');
   const materialsRef = collection(db, 'materials');
   const categoryArray = category.split(/[\s-]+/).map(word => word.toLowerCase());
-  console.log('searching for these keywords in fieldOfStudyTags: ', categoryArray);
 
   const q = query(
     materialsRef,

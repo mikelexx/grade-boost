@@ -76,7 +76,6 @@ export default function SearchResultCard({result}: SearchResultCardProps){
 			      </div>
 		   </div>
 		   {/* OpenFile for opening the file */}
-		   {console.log(`about to open file ${result.id} from SearchResultCard`)}
 		   <OpenFile fileId={result.id}  isOpen={isOpenFileOpen} onClose={handleClose} fileUrl={result.fileUrl} />
 	   </div>
 }

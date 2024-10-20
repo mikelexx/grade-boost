@@ -36,7 +36,6 @@ export default function Save({ currUser, fileId }: SaveProps) {
       await FileService.saveMaterial(fileId, currUser.uid);
       setIsSaved(true);
       localStorage.setItem(`saved_${fileId}`, 'true'); // Save status to local storage
-      console.log('File has been saved successfully!');
       setIsPopupOpen(false);
     } catch (error) {
       console.error('Error saving file:', error);
@@ -47,7 +46,6 @@ export default function Save({ currUser, fileId }: SaveProps) {
   };
 
   const handleLoginClick = () => {
-    console.log('Redirecting to login/signup...');
     setIsPopupOpen(false);
   };
 

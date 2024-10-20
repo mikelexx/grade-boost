@@ -8,7 +8,6 @@ import { Result } from '@/types/Result';
 
 export default function ResultsPage() {
   const searchParams = useSearchParams();
- //  const query = searchParams.get('page');
 
 
   const [results, setResults] = useState<Result[]>([]);
@@ -17,9 +16,6 @@ export default function ResultsPage() {
 
   const [query, setQuery] = useState(searchParams.get('page'));
   const [category, setCategory] = useState(searchParams.get('category'));
-
-console.log('Query:', query);  // Add this for debugging
-console.log('Category:', category);
 
   const [displayedQuery, setDisplayedQuery] = useState('');
   const [materialCounts, setMaterialCounts] = useState({
@@ -31,12 +27,11 @@ console.log('Category:', category);
 
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
 
-  // Function to count materials by type
   const countMaterialsByType = () => {
     const counts = results.reduce(
       (acc, result) => {
-        if (result.materialType === 'pastpapers') acc.pastPapers++;
-        else if (result.materialType === 'assignments') acc.assignments++;
+        if (result.materialType === 'past-papers') acc.pastPapers++;
+        else if (result.materialType === 'assignment') acc.assignments++;
         else if (result.materialType === 'notes') acc.notes++;
         else if (result.materialType === 'solutions') acc.solutions++;
         return acc;
@@ -49,7 +44,7 @@ console.log('Category:', category);
   // Update counts whenever results change
   useEffect(() => {
     countMaterialsByType();
-  }, [results]);  // Trigger the count when 'results' changes
+  }, [results]);
 
   useEffect(() => {
     if (query) {
