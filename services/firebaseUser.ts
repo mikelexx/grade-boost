@@ -1,5 +1,5 @@
 import { getFirestore, doc, setDoc, getDoc, updateDoc,deleteDoc, increment, DocumentReference, DocumentData } from 'firebase/firestore';
-import { getAuth, signInWithEmailAndPassword, onAuthStateChanged,deleteUser, User} from 'firebase/auth';
+import {GoogleAuthProvider, getAuth,signInWithPopup, signInWithEmailAndPassword,reauthenticateWithCredential, onAuthStateChanged,deleteUser, User} from 'firebase/auth';
 import app from '../firebaseConfig';
 const auth = getAuth(app);
 const db = getFirestore(app);
@@ -10,6 +10,7 @@ interface UserData {
   downloadCount: number;
   profileUrl?: string;
   uploadCount: number;
+  uid?:string;
 }
 
 export default class UserService {
@@ -35,7 +36,7 @@ export default class UserService {
       const userDoc = await getDoc(userDocRef);
 
       if (userDoc.exists()) {
-        return userDoc.data() as UserData;  // Return the user data with the correct type
+	      return {uid, ...userDoc.data()} as UserData;  // Return the user data with the correct type
       } else {
         console.log('User document not found');
         return null;
@@ -47,7 +48,7 @@ export default class UserService {
   }
 
   // Function to create a new user document
-  static async createUserDocument(uid: string, email: string, photoURL: string | null): Promise<void> {
+  static async createUserDocument(uid: string, email: string, photoURL: string | null ): Promise<void> {
     try {
       const userDocRef: DocumentReference<DocumentData> = doc(db, 'users', uid);
       await setDoc(userDocRef, {
@@ -88,8 +89,26 @@ export default class UserService {
   static async reauthenticateUser(user: User, password: string): Promise<void> {
     const auth = getAuth(app);
     try {
-      // Use signInWithEmailAndPassword to re-authenticate
-      await signInWithEmailAndPassword(auth, user.email, password);
+	    const userData = await UserService.getUserData(user.uid);
+
+	    if (userData) {
+		    {/*provider id is what they used to sign with e.g google.com, password...*/}
+		    if (user.providerData[0].providerId === 'password') {
+			    // Re-authenticate with email and password
+			    await signInWithEmailAndPassword(auth, userData.email, password);
+		    } else if (user.providerData[0].providerId === 'google.com') {
+			    const provider = new GoogleAuthProvider();
+			    const result = await signInWithPopup(auth, provider);
+			    const credential = GoogleAuthProvider.credentialFromResult(result);
+
+			    // Re-authenticate the user with the credential
+			    await reauthenticateWithCredential(user, credential);
+		    } else {
+			    throw new Error('Unsupported authentication provider');
+		    }
+	    } else {
+		    throw new Error('No user obtained');
+	    }
     } catch (error) {
       console.error('Error during re-authentication:', error);
       throw error; // Throw the error to handle it in the calling function
@@ -99,9 +118,15 @@ export default class UserService {
   static async deleteUser(user: User): Promise<void> {
 
 		  try {
-		    const userDocRef: DocumentReference<DocumentData> = doc(db, 'users', user.uid);
-		    await deleteDoc(userDocRef);
-		    await deleteUser(user);
+		    const userData = await UserService.getUserData(user.uid);
+		    if(userData){
+			    const userDocRef: DocumentReference<DocumentData> = doc(db, 'users', userData.uid || '');
+		            await deleteDoc(userDocRef);
+			    await deleteUser(user);
+		    }
+		    else{
+			    throw new Error('No user obtained');
+		    }
 		  } catch (error) {
 		     console.error('Error deleting account:', error);
 		    throw error;

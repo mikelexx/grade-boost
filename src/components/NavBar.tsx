@@ -13,7 +13,7 @@ export default function NavBar() {
         </Link>
       </div>
       <div className="flex space-x-4 items-center">
-	<Link className="hover:underline" href="#about">About</Link>
+	<Link className="hover:underline" href="/about">About</Link>
 	<Link className="hover:underline" href="#features">Features</Link>
 	<Link className="hover:underline" href="#demo">Demo</Link>
 	<SignUpButtonClient/>

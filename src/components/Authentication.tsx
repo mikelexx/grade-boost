@@ -32,15 +32,18 @@ export default function Authentication() {
     try {
       const result = await signInWithPopup(auth, googleProvider);
       const { uid, email, photoURL}  = result.user;
-      console.log('Google sign-in successful:', result.user);
       const userData = await UserService.getUserData(uid);
       if(!userData){
-	      await UserService.createUserDocument(uid, email ?? '', photoURL ?? '')
+	      await UserService.createUserDocument(uid, email ?? '', photoURL ?? '');
       }
       router.push('/'); // Redirect to the homepage or any other page after successful sign-in
     } catch (error) {
-      console.error('Google sign-in error:', error);
-      setErrorMessage('Failed to sign in with Google. Please try again.'); // Set error message
+	    console.error('Google sign-in error:', error);
+	    if (error.code === 'auth/popup-closed-by-user') {
+		    setErrorMessage('The sign-in popup was closed. Please try again.'); // Specific error message
+	    } else {
+		    setErrorMessage('Failed to sign in with Google. Please try again.');
+	    }
     } finally{
     setLoading(false);
     }

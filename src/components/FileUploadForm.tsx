@@ -48,6 +48,7 @@ const FileUploadForm = () => {
     setMaterialType('');
     setCourseCode('');
     setFieldOfStudy('');
+    router.back();
   };
 
   return (

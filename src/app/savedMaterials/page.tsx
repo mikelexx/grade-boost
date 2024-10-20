@@ -1,5 +1,8 @@
-import UserService from "../../../services/firebaseUser"
 import SavedMaterials from "@/components/SavedMaterial"
+import NavBar from "@/components/NavBar"
 export default function SavedMaterialsPage(){
-	 return <><SavedMaterials /></>
+	 return <>
+	 <NavBar/>
+	 <SavedMaterials />
+	 </>
 }

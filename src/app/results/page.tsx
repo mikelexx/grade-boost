@@ -121,8 +121,8 @@ export default function ResultsPage() {
                 <input
                   type="checkbox"
                   className="form-checkbox text-blue-600"
-                  value="pastpapers"
-                  onChange={() => handleCheckboxChange('pastpapers')}
+                  value="past-papers"
+                  onChange={() => handleCheckboxChange('past-papers')}
                 />
               </label>
               <hr className="border-gray-300" />
@@ -131,8 +131,8 @@ export default function ResultsPage() {
                 <input
                   type="checkbox"
                   className="form-checkbox text-blue-600"
-                  value="assignments"
-                  onChange={() => handleCheckboxChange('assignments')}
+                  value="assignment"
+                  onChange={() => handleCheckboxChange('assignment')}
                 />
               </label>
               <hr className="border-gray-300" />

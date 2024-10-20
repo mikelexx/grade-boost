@@ -49,6 +49,19 @@ export default function SignUpButtonClient() {
     setIsDropdownOpen(!isDropdownOpen);
   };
 
+  const handleDeleteAccountClicked = async () => {
+	  console.log('called handleDeleteAccountClicked');
+	  if (user && user.providerData[0].providerId === 'password') {
+		  setIsModalOpen(true);
+      } else if (user){
+	      console.log('user is from google...');
+	      await UserService.reauthenticateUser(user, '');
+	      await UserService.deleteUser(user);
+      }
+      else{
+
+      }
+  }
   const handleClickOutside = (e) => {
     if (e.target.closest('.profile-dropdown') === null) {
       setIsDropdownOpen(false);
@@ -96,7 +109,7 @@ export default function SignUpButtonClient() {
                 <button onClick={handleSignOut}>Logout</button>
               </li>
               <li className="px-4 py-2 hover:bg-gray-100">
-                <button onClick={() => setIsModalOpen(true)} className="text-red-500">Delete Account</button>
+                <button onClick={handleDeleteAccountClicked} className="text-red-500">Delete Account</button>
               </li>
             </ul>
           </div>
