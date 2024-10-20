@@ -26,7 +26,8 @@ export default class FileService {
       const thumbnailUrl = await FileService.createThumbnail(file);
 
       //to simulate fuzzy search because now firebase wants me to pay
-      const tags = file.name.split(/[\s-]+/).map(word => word.toLowerCase()); // Split by spaces and hyphens, and lowercase
+      const tags = file.name.split(/[\s-_]+/).map(word => word.toLowerCase()); // Split by spaces and hyphens,underscores and lowercase
+      const fieldOfStudyTags = fieldOfStudy?.toLowerCase().split(/[\s-]+/);// same case. for matching search by categories
       if(courseCode) tags.push(courseCode.toLowerCase()); // Add courseCode to the tags
 
       await addDoc(collection(db, "materials"), {
@@ -36,6 +37,7 @@ export default class FileService {
         courseCode,
         fieldOfStudy,
 	fileNameTags: tags,
+	fieldOfStudyTags,
         fileUrl: downloadURL,
         thumbnailUrl: thumbnailUrl, // Add the thumbnail URL to the document
         uploadedAt: new Date(),
@@ -47,7 +49,7 @@ export default class FileService {
       throw error;
     }
   }
-static async downloadFile(fileUrl: string): Promise<void> {
+static async downloadFile(fileName: string, fileUrl: string): Promise<void> {
     try {
       // Reference the file in Firebase Storage
       const fileRef = ref(storage, fileUrl);
@@ -58,7 +60,7 @@ static async downloadFile(fileUrl: string): Promise<void> {
       // Create a download link for the file
       const link = document.createElement("a");
       link.href = window.URL.createObjectURL(blob);
-      link.download = fileUrl.split("/").pop() || "download"; // Set the filename
+      link.download = fileName || 'download';
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -212,23 +214,21 @@ static async searchMaterials(queryStr: string) {
   return recentMaterials;
 }
 static async searchFilesByCategory(category: string) {
-  const materialsRef = collection(db, 'materials'); // Assume 'materials' is your Firestore collection
+	console.log('called searchFilesByCategory');
+  const materialsRef = collection(db, 'materials');
+  const categoryArray = category.split(/[\s-]+/).map(word => word.toLowerCase());
+  console.log('searching for these keywords in fieldOfStudyTags: ', categoryArray);
 
-  // Query for files where fileTags or fieldOfStudy contains the category
-
-      const categoryArray = category.split(/[\s-]+/).map(word => word.toLowerCase()); // Split by spaces and hyphens, and lowercase
-      const q = query(
-	      materialsRef,
-	      ...categoryArray.map(word => where('fileTags', 'array-contains', word)), // Apply array-contains for each word
-		      where('fieldOfStudy', '==', category) // Field of study match
-      );
-
+  const q = query(
+    materialsRef,
+    where('fieldOfStudyTags', 'array-contains-any', categoryArray)
+  );
 
   const querySnapshot = await getDocs(q);
 
   const materials = querySnapshot.docs.map(doc => ({
     id: doc.id,
-    ...doc.data()
+    ...doc.data(),
   }));
 
   return materials;
@@ -268,8 +268,36 @@ static async searchFilesByCategory(category: string) {
       reader.readAsArrayBuffer(file);
     });
   }
-  // In firebaseFile.ts
 
+static async openFile(userId: string, fileId: string): Promise<boolean> {
+  try {
+    const openedRef = collection(db, "openedMaterials");
+
+    // Check if the user has already opened this file
+    const querySnapshot = await getDocs(
+      query(openedRef, where("userId", "==", userId), where("fileId", "==", fileId))
+    );
+
+    if (!querySnapshot.empty) {
+      // User has already opened this file, do not increment download count
+      return true;
+    }
+
+    // Add a record indicating the user opened this file
+    await addDoc(openedRef, {
+      userId: userId,
+      fileId: fileId,
+      openedAt: new Date(),
+    });
+
+    // Increment the user's download count
+    await UserService.incrementDownloadCount(userId);
+    return true;
+  } catch (error) {
+    console.error(`Error opening file for userId ${userId}:`, error);
+    throw error;
+  }
+}
 
 }
 

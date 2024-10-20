@@ -1,42 +1,82 @@
 "use client";
+"use client";
 import 'reactjs-popup/dist/index.css';
-import React, { useState } from 'react';
+import React, { useState, useEffect} from 'react';
 import Popup from 'reactjs-popup';
 import { FaDownload } from "react-icons/fa"; // Icons from react-icons
 import { IoClose } from 'react-icons/io5';
 import Link from 'next/link';
 import { CurrentUser } from '@/types/CurrentUser';
 import FileService from '../../services/firebaseFile';
+import UserService from '../../services/firebaseUser';
 
+import { getAuth, onAuthStateChanged} from "firebase/auth";
+import app from '../../firebaseConfig';
 
 
 interface DownloadProps {
-  currUser?: CurrentUser | null;
-  fileUrl ?: string
+  user?: CurrentUser | null;
+  fileUrl ?: string;
+  fileName ?: string;
+  currUser ?: CurrentUser;
 }
 
-export default function Download({ currUser, fileUrl }: DownloadProps) {
+export default function Download({ currUser, fileUrl, fileName }: DownloadProps) {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [user, setUser] = useState(currUser);
+  useEffect(() => {
+    const auth = getAuth(app);
+    const unsubscribe = onAuthStateChanged(auth, async (userFromAuth) => {
+	    if(userFromAuth){
+		    const userData = await UserService.getUserData(userFromAuth.uid || '');
+		    if (userData) {
+			    setUser({
+				    uid: userFromAuth.uid,
+				    uploadCount: userData.uploadCount,
+				    downloadCount: userData.downloadCount,
+			    });
+		    }
+	    }
+    }
+  );
+    return () => unsubscribe();
+  }, []);
 
   const handleDownloadClick = async () => {
-    if (!currUser) {
+    if (!user) {
       // Show a message asking the user to log in or sign up
       setIsPopupOpen(true);
       return;
     }
 
-    if (currUser.downloadCount < currUser.uploadCount * 3) {
+    if (user.downloadCount < user.uploadCount * 5) {
       // Proceed with file download
-      console.log(`uploads ${currUser.uploadCount}, downlaods: ${currUser.downloadCount} `);
-      console.log('File is downloading...');
-      // create a link to download file and click it
-     try {
-	     await FileService.downloadFile(fileUrl || '');
+      console.log(`uploads ${user.uploadCount}, downlaods: ${user.downloadCount}` );
+      setIsDownloading(true);
+      setProgress(0);
+      try {
+	      const downloadInterval = setInterval(() => {
+		      setProgress((prev) => {
+			      if (prev >= 100) {
+				      clearInterval(downloadInterval);
+				      setIsDownloading(false);
+				      return 100;
+			      }
+			      return prev + 10;
+		      });
+	      }, 300); // Increase progress every 300ms
+
+	      console.log(`downloading from this url: ${fileUrl}`);
+	     await FileService.downloadFile(fileName || '', fileUrl || '');
 	     setIsPopupOpen(false);
+	     setIsDownloading(false);
 	     console.log('download initiated sucessfully');
       } catch (error) {
         console.error('Error downloading file:', error);
+	setIsDownloading(false);
       }
 
       setIsPopupOpen(false);
@@ -68,8 +108,8 @@ return (
   <>
     <Popup open={isPopupOpen} onClose={() => setIsPopupOpen(false)} position="top center">
       <div className="p-4 bg-white shadow-lg rounded-lg">
-        {currUser ? (
-          currUser.uploadCount === 0 ? (
+        {user ? (
+          user.uploadCount === 0 ? (
             <div>
               <p>Looks like you haven't uploaded any files yet! To unlock your download access, simply upload a file. For every file you share, you can download up to 5 materials. Let's get sharing!</p>
               <button onClick={handleUploadClick} className="mt-2 bg-blue-500 text-white py-2 px-4 rounded">
@@ -80,12 +120,22 @@ return (
                 <IoClose size={24} />
               </button>
             </div>
-          ) : currUser.downloadCount < currUser.uploadCount * 3 ? (
-            <div>
-              {/* File downloading state */}
-              <p>Your file is downloading...</p>
-              {/* You can add a progress bar here */}
-            </div>
+
+          ) : user.downloadCount  < user.uploadCount  * 5? (
+	  isDownloading && (
+		<div className="mt-2">
+
+		<p>Your file is downloading...</p>
+
+		<div className="relative w-full h-4 bg-gray-200 rounded">
+			<div
+		         className="absolute left-0 top-0 h-full bg-blue-500 rounded"
+			 ></div>
+		</div>
+		<p className="text-sm text-gray-500 mt-1">{progress}%</p>
+
+		</div>
+	      )
           ) : (
             <div>
               <p>You have exceeded your download limit. To unlock your download access, please upload more files. Remember, for every file you share, you can download up to 5 materials!</p>

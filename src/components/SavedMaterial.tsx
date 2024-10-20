@@ -8,6 +8,7 @@ import UserService from '../../services/firebaseUser';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import app from "../../firebaseConfig";
 import { CurrentUser } from "@/types/CurrentUser";
+import { useRouter } from 'next/navigation';
 
 interface SavedMaterial {
   id: string;
@@ -26,6 +27,7 @@ export default function SavedMaterials() {
   const [currUser, setCurrUser] = useState<CurrentUser | null>(null);
   const [isOpenFileOpen, setOpenFileOpen] = useState(false);
   const [selectedFileUrl, setSelectedFileUrl] = useState<string>('');
+  const router = useRouter();
 
   const handleOpen = (fileUrl: string) => {
     setOpenFileOpen(true); // Open the modal
@@ -90,7 +92,7 @@ const handleRemoveClick = async (fileId: string, userId: string) => {
   try {
     if (fileId && userId) {
       await FileService.removeSavedMaterial(fileId, userId);
-      localStorage.setItem(`saved_${fileId}`, 'false'); // Save status to local storage
+      localStorage.removeItem(`saved_${fileId}`)
       setSavedMaterials(savedMaterials.filter(material=>material.id !== fileId));
     } else {
       console.error('User ID or Material ID is undefined');
@@ -107,6 +109,9 @@ const handleRemoveClick = async (fileId: string, userId: string) => {
   if (savedMaterials.length === 0) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center h-full text-gray-600">
+       <button onClick={() => router.back()} className="mb-4 text-blue-500 hover:underline">
+	  Back
+       </button>
         <h2 className="text-xl font-semibold">No Saved Materials</h2>
         <p className="mt-2">You haven't saved any materials yet. Explore materials and save them for later access.</p>
       </div>
@@ -115,9 +120,11 @@ const handleRemoveClick = async (fileId: string, userId: string) => {
 
   return (
     <div className="min-h-screen container min-w-screen mx-auto py-8">
+      <button onClick={() => router.back()} className="mb-4 text-blue-500 hover:underline">
+          Back
+      </button>
       <h1 className="text-2xl font-semibold mb-4">Saved Materials</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {console.log(savedMaterials)}
         {savedMaterials.map((material) => (
           <div key={material.id} className="bg-white p-4 shadow-md rounded-lg">
             <img src={material.thumbnailUrl} alt={material.fileName} className="w-full h-48 object-cover mb-4 rounded" />

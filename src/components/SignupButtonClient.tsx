@@ -67,7 +67,7 @@ export default function SignUpButtonClient() {
 
   return !isAuthPage && (
     !user ? (
-      <button className="bg-black text-white">
+      <button className="bg-white text-black">
         <Link className="hover:underline" href="/auth">SignUp</Link>
       </button>
     ) : (
@@ -90,7 +90,7 @@ export default function SignUpButtonClient() {
           <div className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-md z-50">
             <ul className="py-1">
               <li className="px-4 py-2 hover:bg-gray-100">
-                <Link href="/saved-materials">Saved Materials</Link>
+                <Link href="/savedMaterials">Saved Materials</Link>
               </li>
               <li className="px-4 py-2 hover:bg-gray-100">
                 <button onClick={handleSignOut}>Logout</button>

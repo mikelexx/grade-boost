@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import Search from "./Search";
 import { useState } from "react";
+import UploadButton from "./UploadButton";
 
 interface ResultsPageNavBarProps {
   onSearch: (query: string) => void;
@@ -38,10 +39,14 @@ export default function ResultsPageNavBar({ onSearch }: ResultsPageNavBarProps) 
       <div className="flex space-x-4">
         <Link className="hover:underline" href="#signup"></Link>
         <div className="relative">
+	{/*
           <select className="mt-1 rounded-md border-gray-300 bg-white text-black">
             <option value="English" selected>English</option>
             <option value="Swahili">Swahili</option>
           </select>
+
+		*/}
+	       <UploadButton/>
         </div>
       </div>
     </nav>

@@ -8,67 +8,81 @@ import { Result } from '@/types/Result';
 
 export default function ResultsPage() {
   const searchParams = useSearchParams();
-  const query = searchParams.get('page');
-  const category = searchParams.get('category');
+ //  const query = searchParams.get('page');
+
+
   const [results, setResults] = useState<Result[]>([]);
   const [filteredResults, setFilteredResults] = useState<Result[]>([]);
   const [loading, setLoading] = useState(false);
-  const [displayedQuery, setDisplayedQuery] = useState(''); // New state for displayed query
 
+  const [query, setQuery] = useState(searchParams.get('page'));
+  const [category, setCategory] = useState(searchParams.get('category'));
+
+console.log('Query:', query);  // Add this for debugging
+console.log('Category:', category);
+
+  const [displayedQuery, setDisplayedQuery] = useState('');
   const [materialCounts, setMaterialCounts] = useState({
-    pastPapers: 0,
+
     assignments: 0,
     notes: 0,
     solutions: 0,
   });
 
-  const [selectedTypes, setSelectedTypes] = useState<string[]>([]); // State for selected checkboxes
+  const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
 
-      const countMaterialsByType = ()=>{
-	      const counts = searchResults.reduce(
-		(acc, result) => {
-		  if (result.materialType === 'pastpapers') acc.pastPapers++;
-		  else if (result.materialType === 'assignments') acc.assignments++;
-		  else if (result.materialType === 'notes') acc.notes++;
-		  else if (result.materialType === 'solutions') acc.solutions++;
-		  return acc;
-		},
-		{ pastPapers: 0, assignments: 0, notes: 0, solutions: 0 }
-	      );
-	      setMaterialCounts(counts);
+  // Function to count materials by type
+  const countMaterialsByType = () => {
+    const counts = results.reduce(
+      (acc, result) => {
+        if (result.materialType === 'pastpapers') acc.pastPapers++;
+        else if (result.materialType === 'assignments') acc.assignments++;
+        else if (result.materialType === 'notes') acc.notes++;
+        else if (result.materialType === 'solutions') acc.solutions++;
+        return acc;
+      },
+      { pastPapers: 0, assignments: 0, notes: 0, solutions: 0 }
+    );
+    setMaterialCounts(counts);
+  };
 
-      }
+  // Update counts whenever results change
+  useEffect(() => {
+    countMaterialsByType();
+  }, [results]);  // Trigger the count when 'results' changes
 
   useEffect(() => {
     if (query) {
       handleSearch(query);
     }
-    if(category){
-	    handleCategorySearch(category);
+    if (category) {
+      handleCategorySearch(category);
     }
   }, [query, category]);
 
-  const handleCategorySearch = async (category: string) =>{
-	  setDisplayedQuery(category);
-	  setLoading(true);
-	  try {
-		  const searchResults = await FileService.searchFilesByCategory(category);
-		  setResults(searchResults);
-		  setFilteredResults(searchResults); // Initialize with all results
-		  countMaterialsByType();
+  const handleCategorySearch = async (category: string) => {
+    setDisplayedQuery(category);
+    setCategory(category);
+    setLoading(true);
+    try {
+      const searchResults = await FileService.searchFilesByCategory(category);
+      setResults(searchResults);
+      setFilteredResults(searchResults); // Initialize with all results
+    } catch (error) {
+      console.error('Error fetching category search results:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-	  }catch(error){
-
-	  }
-  }
   const handleSearch = async (query: string) => {
     setDisplayedQuery(query);
+    setQuery(query);
     setLoading(true);
     try {
       const searchResults = await FileService.searchMaterials(query);
-      setResults(searchResults);
-      setFilteredResults(searchResults); // Initialize with all results
-      countMaterialsByType();
+      setResults(searchResults as Result[]);
+      setFilteredResults(searchResults as Result[]);
     } catch (error) {
       console.error('Error searching materials:', error);
     } finally {

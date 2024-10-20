@@ -14,7 +14,6 @@ interface UserData {
 
 export default class UserService {
    static getCurrentUser() {
-	   console.log('getCurrentUser called')
     return auth.currentUser;
 
   }
@@ -68,6 +67,7 @@ export default class UserService {
     try {
       const userDocRef: DocumentReference<DocumentData> = doc(db, 'users', uid);
       await updateDoc(userDocRef, { downloadCount: increment(1) });
+      console.log(`user downloadCount += 1`)
     } catch (error) {
       console.error('Error incrementing download count:', error);
       throw error;
@@ -79,6 +79,7 @@ export default class UserService {
     try {
       const userDocRef: DocumentReference<DocumentData> = doc(db, 'users', uid);
       await updateDoc(userDocRef, { uploadCount: increment(1) });
+      console.log(`user downloadCount += 1`)
     } catch (error) {
       console.error('Error incrementing upload count:', error);
       throw error;

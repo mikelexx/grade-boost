@@ -5,6 +5,8 @@ import Download from '@/components/Download';
 import { useState } from 'react';
 import { Result } from '@/types/Result';
 import OpenFile from './OpenFile';
+import UserService from '../../services/firebaseUser';
+import Save from './Save';
 
 interface SearchResultCardProps {
   result: Result;
@@ -56,22 +58,25 @@ export default function SearchResultCard({result}: SearchResultCardProps){
 				      </button>
 
 				      <Download />
-
+				      <Save currUser={UserService.getCurrentUser()} fileId={result.id}/>
+				      {/*
 				      <button className="flex items-center space-x-1 text-green-500 hover:text-green-700">
 					      <FaSave />
-					      <span className="hidden sm:inline">Save</span> {/* Hide text on small screens */}
+					      <span className="hidden sm:inline">Save</span>
 				      </button>
 
 				      <button className="flex items-center space-x-1 text-blue-500 hover:text-blue-700">
 					      <FaShareAlt />
-					      <span className="hidden sm:inline">Share</span> {/* Hide text on small screens */}
+					      <span className="hidden sm:inline">Share</span>
 				      </button>
+				      */}
 
 				      {/* Kebab menu */}
 				      <button className="text-gray-400 text-xl">⋮</button>
 			      </div>
 		   </div>
 		   {/* OpenFile for opening the file */}
-		   <OpenFile isOpen={isOpenFileOpen} onClose={handleClose} fileUrl={result.fileUrl} />
+		   {console.log(`about to open file ${result.id} from SearchResultCard`)}
+		   <OpenFile fileId={result.id}  isOpen={isOpenFileOpen} onClose={handleClose} fileUrl={result.fileUrl} />
 	   </div>
 }

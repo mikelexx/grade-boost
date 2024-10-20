@@ -15,7 +15,6 @@ import Save from './Save';
 
 
 export default function RecentItems() {
-	console.log('RecentItems Component called');
   const [currUser, setCurrUser] = useState<CurrentUser | null>(null);
   const [hydrated, setHydrated] = useState(false);
   const [recentItems, setRecentItems] = useState<Result[]>([])
@@ -34,7 +33,7 @@ export default function RecentItems() {
       if (user) {
 	      try{
 		      const userData = await UserService.getUserData(user.uid);
-		if (userData) {
+		      if (userData) {
 		  setCurrUser({
 		    downloadCount: userData.downloadCount,
 		    uploadCount: userData.uploadCount,
@@ -75,7 +74,6 @@ export default function RecentItems() {
   if (!hydrated) {
     return null; // Avoid server/client mismatch
   }
-  console.log('recent items:', recentItems);
 return (
     recentItems.length > 0 && (
       <section>
@@ -117,7 +115,7 @@ return (
                 <p className="font-bold text-lg mb-2">{item.fileName}</p>
                 <hr className="border-t border-gray-300 mb-4" />
                 <div className="flex items-center space-x-4">
-                  <Download currUser={currUser} />
+                  <Download fileUrl={item.fileUrl} fileName={item.fileName} />
 
 		  {/*
                   <button className="flex items-center space-x-1 text-green-500 hover:text-green-700">
@@ -135,7 +133,7 @@ return (
                 </div>
               </div>
 		   {/* OpenFile for opening the file */}
-		   <OpenFile isOpen={isOpenFileOpen} onClose={handleClose} fileUrl={item.fileUrl} />
+		   <OpenFile fileId={item.id} isOpen={isOpenFileOpen} onClose={handleClose} fileUrl={item.fileUrl} currUser={currUser} />
             </div>
           ))}
         </div>
