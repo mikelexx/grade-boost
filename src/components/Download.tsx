@@ -73,7 +73,7 @@ export default function Download({ currUser, fileUrl, fileName }: DownloadProps)
 	     await FileService.downloadFile(fileName || '', fileUrl || '');
 	     setIsPopupOpen(false);
 	     setIsDownloading(false);
-	     console.log('download initiated sucessfully');
+	     console.log('download finished');
       } catch (error) {
         console.error('Error downloading file:', error);
 	setIsDownloading(false);
@@ -124,9 +124,6 @@ return (
           ) : user.downloadCount  < user.uploadCount  * 5? (
 	  isDownloading && (
 		<div className="mt-2">
-
-		<p>Your file is downloading...</p>
-
 		<div className="relative w-full h-4 bg-gray-200 rounded">
 			<div
 		         className="absolute left-0 top-0 h-full bg-blue-500 rounded"

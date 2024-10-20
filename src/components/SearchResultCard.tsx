@@ -57,7 +57,7 @@ export default function SearchResultCard({result}: SearchResultCardProps){
 					      <span className="hidden sm:inline">Open</span> {/* Hide text on small screens */}
 				      </button>
 
-				      <Download />
+				      <Download fileUrl={result.fileUrl} fileName={result.fileName}/>
 				      <Save currUser={UserService.getCurrentUser()} fileId={result.id}/>
 				      {/*
 				      <button className="flex items-center space-x-1 text-green-500 hover:text-green-700">
