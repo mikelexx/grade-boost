@@ -23,7 +23,6 @@ interface DownloadProps {
 
 export default function Download({ currUser, fileUrl, fileName }: DownloadProps) {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [isDownloading, setIsDownloading] = useState(false);
   const [user, setUser] = useState(currUser);
@@ -88,15 +87,9 @@ export default function Download({ currUser, fileUrl, fileName }: DownloadProps)
 
   const handleUploadClick = () => {
     // Navigate to the file upload page
-    setIsUploading(true);
     setIsPopupOpen(false); // Close the popup and start the upload process
   };
 
-  const handleLoginClick = () => {
-    // Trigger login or signup flow
-    console.log('Redirecting to login/signup...');
-    setIsPopupOpen(false); // Close the popup
-  };
 
   const DownloadButton = (
     <button onClick={handleDownloadClick} className="flex items-center space-x-1 text-blue-500 hover:text-blue-700">
@@ -111,7 +104,7 @@ return (
         {user ? (
           user.uploadCount === 0 ? (
             <div>
-              <p>Looks like you haven't uploaded any files yet! To unlock your download access, simply upload a file. For every file you share, you can download up to 5 materials. Let's get sharing!</p>
+              <p>Looks like you haven&apost uploaded any files yet! To unlock your download access, simply upload a file. For every file you share, you can download up to 5 materials. Let&aposs get sharing!</p>
               <button onClick={handleUploadClick} className="mt-2 bg-blue-500 text-white py-2 px-4 rounded">
 	      {/*direct use to signIn first before downloading*/}
                 <Link href={'/upload'}>Upload Now</Link>

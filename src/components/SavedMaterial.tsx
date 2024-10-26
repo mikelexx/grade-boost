@@ -1,6 +1,7 @@
 "use client"
 import React, { useState, useEffect } from 'react';
-import { FaDownload, FaFolderOpen, FaTrashAlt, FaShareAlt } from 'react-icons/fa'; // Icons from react-icons
+import Image from 'next/image';
+import {  FaFolderOpen, FaTrashAlt } from 'react-icons/fa'; // Icons from react-icons
 import OpenFile from './OpenFile';
 import Download from './Download';
 import FileService from '../../services/firebaseFile';
@@ -8,21 +9,11 @@ import UserService from '../../services/firebaseUser';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import app from "../../firebaseConfig";
 import { CurrentUser } from "@/types/CurrentUser";
+import { FileMaterial } from '@/types/FileMaterial';
 import { useRouter } from 'next/navigation';
 
-interface SavedMaterial {
-  id: string;
-  authorId: string;
-  fileName: string;
-  materialType: string;
-  courseCode?: string;
-  fileUrl: string;
-  thumbnailUrl: string;
-  savedAt: Date;
-}
-
 export default function SavedMaterials() {
-  const [savedMaterials, setSavedMaterials] = useState<SavedMaterial[]>([]);
+  const [savedMaterials, setSavedMaterials] = useState<FileMaterial[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [currUser, setCurrUser] = useState<CurrentUser | null>(null);
   const [isOpenFileOpen, setOpenFileOpen] = useState(false);
@@ -65,9 +56,6 @@ export default function SavedMaterials() {
 
     return () => unsubscribe(); // Clean up listener on component unmount
   }, []);
-async function fetchSavedMaterials() {
-}
-
 
   useEffect(() => {
 	  const fetchSavedMaterials = async () => {
@@ -87,8 +75,9 @@ async function fetchSavedMaterials() {
 	fetchSavedMaterials();
   }, [currUser]);
 
-const handleRemoveClick = async (fileId: string, userId: string) => {
+const handleRemoveClick = async (fileId: string) => {
   try {
+	  const userId = currUser?.uid;
     if (fileId && userId) {
       await FileService.removeSavedMaterial(fileId, userId);
       localStorage.removeItem(`saved_${fileId}`)
@@ -112,7 +101,7 @@ const handleRemoveClick = async (fileId: string, userId: string) => {
 	  Back
        </button>
         <h2 className="text-xl font-semibold">No Saved Materials</h2>
-        <p className="mt-2">You haven't saved any materials yet. Explore materials and save them for later access.</p>
+        <p className="mt-2">You haven&apost saved any materials yet. Explore materials and save them for later access.</p>
       </div>
     );
   }
@@ -126,7 +115,7 @@ const handleRemoveClick = async (fileId: string, userId: string) => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {savedMaterials.map((material) => (
           <div key={material.id} className="bg-white p-4 shadow-md rounded-lg">
-            <img src={material.thumbnailUrl} alt={material.fileName} className="w-full h-48 object-cover mb-4 rounded" />
+            <Image src={material.thumbnailUrl} alt={material.fileName} className="w-full h-48 object-cover mb-4 rounded" />
             <div className="flex justify-between items-center mb-2">
               <h2 className="text-lg font-semibold truncate">{material.fileName}</h2>
               <span className="text-sm text-gray-500">{material.materialType}</span>
@@ -136,15 +125,15 @@ const handleRemoveClick = async (fileId: string, userId: string) => {
               <button onClick={() => handleOpen(material.fileUrl)} className="flex items-center space-x-1 text-yellow-500 hover:text-yellow-700">
                 <FaFolderOpen /> <span className="ml-1">Open</span>
               </button>
-              <Download fileUrl={material.fileUrl} currUser={currUser} />
-              <button className="text-red-500 hover:text-red-700" onClick={() => handleRemoveClick(material.id, currUser.uid)}>
+              <Download fileUrl={material.fileUrl}/>
+              <button className="text-red-500 hover:text-red-700" onClick={() => handleRemoveClick(material.id || '')}>
                 <FaTrashAlt /> <span className="ml-1">Remove</span>
               </button>
             </div>
+	    <OpenFile isOpen={isOpenFileOpen} onClose={handleClose} fileUrl={selectedFileUrl} fileId={material.id || ''} />
           </div>
         ))}
       </div>
-      <OpenFile isOpen={isOpenFileOpen} onClose={handleClose} fileUrl={selectedFileUrl} />
     </div>
   );
 }

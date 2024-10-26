@@ -7,7 +7,7 @@ import FileService from '../../services/firebaseFile';
 import UserService from '../../services/firebaseUser';
 import { CurrentUser } from '@/types/CurrentUser';
 
-import { getAuth, onAuthStateChanged, User } from "firebase/auth";
+import { getAuth, onAuthStateChanged} from "firebase/auth";
 import app from "../../firebaseConfig";
 
 interface OpenFileProps {
@@ -15,13 +15,12 @@ interface OpenFileProps {
   onClose: () => void;
   fileId: string;
   fileUrl: string;
-  currUser: CurrentUser;
 }
 
-const OpenFile: React.FC<OpenFileProps> = ({ isOpen, onClose, fileId, fileUrl, currUser }) => {
+const OpenFile: React.FC<OpenFileProps> = ({ isOpen, onClose, fileId, fileUrl}) => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [canOpenFile, setCanOpenFile] = useState(false);
-  const [user, setUser] = useState(currUser);
+  const [user, setUser] = useState<CurrentUser | null>(null);
   useEffect(() => {
     const auth = getAuth(app);
     const unsubscribe = onAuthStateChanged(auth, async (userFromAuth) => {
@@ -79,11 +78,6 @@ const OpenFile: React.FC<OpenFileProps> = ({ isOpen, onClose, fileId, fileUrl, c
     // Redirect to upload page
   };
 
-  const handleLoginClick = () => {
-    // Trigger login/signup flow
-    console.log('Redirecting to login/signup...');
-    setIsPopupOpen(false); // Close the popup
-  };
 
   return (
     <>
@@ -117,7 +111,7 @@ const OpenFile: React.FC<OpenFileProps> = ({ isOpen, onClose, fileId, fileUrl, c
           {user ? (
             user.uploadCount === 0 ? (
               <div>
-                <p>You haven't uploaded any files yet! Please upload a file to unlock access.</p>
+                <p>You haven&apost uploaded any files yet! Please upload a file to unlock access.</p>
                 <button onClick={handleUploadClick} className="mt-2 bg-blue-500 text-white py-2 px-4 rounded">
                   <Link href={'/upload'}>Upload Now</Link>
                 </button>

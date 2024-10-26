@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import Search from "./Search";
-export default function ResultsPageNavBar() {
+export default function ResultsPageNavBar({ onSearch }: { onSearch: (query: string) => void }) {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50  h-16 flex items-center justify-between px-4 bg-white text-black shadow-md">
       <div className="flex-row space-x-4">
@@ -11,7 +11,7 @@ export default function ResultsPageNavBar() {
         </Link>
       </div>
       <div className="flex-grow mx-4">
-        <Search isRounded={false} />
+        <Search isRounded={false} onSearch={onSearch} />
       </div>
       <div className="flex space-x-4">
         <Link className="hover:underline" href="#signup">

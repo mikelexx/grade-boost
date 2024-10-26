@@ -1,13 +1,14 @@
 "use client";
 import { usePathname } from "next/navigation";
-import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
+import { getAuth, onAuthStateChanged, signOut, User } from "firebase/auth";
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import app from "../../firebaseConfig";
 import UserService from "../../services/firebaseUser";
 
 export default function SignUpButtonClient() {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState <User|null>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false); // State for modal
   const [password, setPassword] = useState(''); // State for password input
@@ -62,11 +63,13 @@ export default function SignUpButtonClient() {
 
       }
   }
-  const handleClickOutside = (e) => {
-    if (e.target.closest('.profile-dropdown') === null) {
+  const handleClickOutside = (e: MouseEvent) => {
+	  const target = e.target as Element;
+    if (target && !target.closest('.profile-dropdown')) {
       setIsDropdownOpen(false);
       setIsModalOpen(false); // Close modal if clicked outside
     }
+
   };
 
   useEffect(() => {
@@ -89,10 +92,12 @@ export default function SignUpButtonClient() {
           className="flex items-center cursor-pointer"
           onClick={toggleDropdown}
         >
-          <img
+          <Image
             src={user.photoURL || '/images/defaultUser.jpeg'}
             alt="Profile"
             className="w-10 h-10 rounded-full"
+	    width={200}
+	    height={200}
           />
           <span className={`ml-2 transition-transform duration-300 ${isDropdownOpen ? "rotate-90" : ""}`}>
             &gt;

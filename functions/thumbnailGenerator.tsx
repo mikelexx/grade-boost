@@ -1,13 +1,18 @@
 const { PDFDocument } = require('pdf-lib');
-const fs = require('fs').promises; // Use the promises API for fs
+const fs = require('fs').promises;
 const path = require('path');
-const { createCanvas } = require('canvas'); // For image rendering
-const functions = require('firebase-functions');
-const admin = require('firebase-admin');
+const { createCanvas } = require('canvas');
+import * as admin from 'firebase-admin';
+const {onObjectFinalized} = require("firebase-functions/v2/storage");
 
+interface ObjectMetadata {
+  bucket: string;
+  name: string;
+  contentType?: string;
+}
 admin.initializeApp();
 
-exports.generateThumbnail = functions.storage.object().onFinalize(async (object) => {
+exports.generateThumbnail = onObjectFinalized(async (object: ObjectMetadata) => {
   const bucket = admin.storage().bucket(object.bucket);
   const filePath = object.name;
   console.log('generating thumbnai for this filepath: ', filePath);
@@ -51,11 +56,15 @@ exports.generateThumbnail = functions.storage.object().onFinalize(async (object)
 
     // Update Firestore document with the geneeated thumbnail URL
     const db = admin.firestore();
-    const materialsRef = db.collection('materials').doc(filePath.split('/').pop());
+    const docId = filePath.split('/').pop();
+    if(docId){
+    const materialsRef = db.collection('materials').doc(docId);
     await materialsRef.update({
       thumbnailUrl: thumbnailUrl[0], // Update the document with the first URL from the array
     });
 
+
+    }
     console.log('Thumbnail generated for PDF:', filePath);
   }
 });

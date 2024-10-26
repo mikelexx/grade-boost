@@ -4,6 +4,8 @@ import { getAuth, signInWithPopup, GoogleAuthProvider, signInWithEmailAndPasswor
 import UserService from '../../services/firebaseUser';
 import app from '../../firebaseConfig';
 import { useRouter } from 'next/navigation'; // Use next/navigation for client components
+import { FirebaseError } from 'firebase/app';
+
 
 const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
@@ -36,14 +38,19 @@ export default function Authentication() {
       if(!userData){
 	      await UserService.createUserDocument(uid, email ?? '', photoURL ?? '');
       }
-      router.push('/'); // Redirect to the homepage or any other page after successful sign-in
-    } catch (error) {
+      router.back();
+    } catch (error ) {
 	    console.error('Google sign-in error:', error);
+	    if(error instanceof FirebaseError){
 	    if (error.code === 'auth/popup-closed-by-user') {
 		    setErrorMessage('The sign-in popup was closed. Please try again.'); // Specific error message
 	    } else {
 		    setErrorMessage('Failed to sign in with Google. Please try again.');
 	    }
+
+	    } else {
+            setErrorMessage('An unexpected error occurred. Please try again.');
+        }
     } finally{
     setLoading(false);
     }
@@ -148,7 +155,7 @@ export default function Authentication() {
             </p>
           ) : (
             <p>
-              Don't have an account?{' '}
+              Don&apost have an account?{' '}
               <button onClick={() => setIsSignUp(true)} className="text-blue-500 hover:underline">
                 Sign up
               </button>

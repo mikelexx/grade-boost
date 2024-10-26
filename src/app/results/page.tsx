@@ -1,63 +1,56 @@
 "use client";
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import ResultsPageNavBar from '@/components/ResultsPageNavBar';
 import SearchResultCard from '@/components/SearchResultCard';
 import FileService from '../../../services/firebaseFile';
-import { Result } from '@/types/Result';
+import { FileMaterial } from '@/types/FileMaterial';
 
-export default function ResultsPage() {
+function ResultsPageComponent() {
   const searchParams = useSearchParams();
-
-
-  const [results, setResults] = useState<Result[]>([]);
-  const [filteredResults, setFilteredResults] = useState<Result[]>([]);
+  const [results, setResults] = useState<FileMaterial[]>([]);
+  const [filteredResults, setFilteredResults] = useState<FileMaterial[]>([]);
   const [loading, setLoading] = useState(false);
-
-  const [query, setQuery] = useState(searchParams.get('page'));
-  const [category, setCategory] = useState(searchParams.get('category'));
-
   const [displayedQuery, setDisplayedQuery] = useState('');
   const [materialCounts, setMaterialCounts] = useState({
-
     assignments: 0,
     notes: 0,
     solutions: 0,
+    pastPapers: 0,
   });
-
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
 
-  const countMaterialsByType = () => {
-    const counts = results.reduce(
-      (acc, result) => {
-        if (result.materialType === 'past-papers') acc.pastPapers++;
-        else if (result.materialType === 'assignment') acc.assignments++;
-        else if (result.materialType === 'notes') acc.notes++;
-        else if (result.materialType === 'solutions') acc.solutions++;
-        return acc;
-      },
-      { pastPapers: 0, assignments: 0, notes: 0, solutions: 0 }
-    );
-    setMaterialCounts(counts);
-  };
-
-  // Update counts whenever results change
   useEffect(() => {
-    countMaterialsByType();
-  }, [results]);
+    const query = searchParams.get('page');
+    const category = searchParams.get('category');
 
-  useEffect(() => {
     if (query) {
       handleSearch(query);
     }
     if (category) {
       handleCategorySearch(category);
     }
-  }, [query, category]);
+  }, [searchParams]);
+
+  useEffect(() => {
+    const countMaterialsByType = () => {
+      const counts = results.reduce(
+        (acc, result) => {
+          if (result.materialType === 'past-papers') acc.pastPapers++;
+          else if (result.materialType === 'assignment') acc.assignments++;
+          else if (result.materialType === 'notes') acc.notes++;
+          else if (result.materialType === 'solutions') acc.solutions++;
+          return acc;
+        },
+        { pastPapers: 0, assignments: 0, notes: 0, solutions: 0 }
+      );
+      setMaterialCounts(counts);
+    };
+    countMaterialsByType();
+  }, [results]);
 
   const handleCategorySearch = async (category: string) => {
     setDisplayedQuery(category);
-    setCategory(category);
     setLoading(true);
     try {
       const searchResults = await FileService.searchFilesByCategory(category);
@@ -72,12 +65,11 @@ export default function ResultsPage() {
 
   const handleSearch = async (query: string) => {
     setDisplayedQuery(query);
-    setQuery(query);
     setLoading(true);
     try {
       const searchResults = await FileService.searchMaterials(query);
-      setResults(searchResults as Result[]);
-      setFilteredResults(searchResults as Result[]);
+      setResults(searchResults as FileMaterial[]);
+      setFilteredResults(searchResults as FileMaterial[]);
     } catch (error) {
       console.error('Error searching materials:', error);
     } finally {
@@ -85,7 +77,6 @@ export default function ResultsPage() {
     }
   };
 
-  // Handle checkbox change
   const handleCheckboxChange = (type: string) => {
     const updatedSelectedTypes = selectedTypes.includes(type)
       ? selectedTypes.filter((t) => t !== type)
@@ -93,7 +84,6 @@ export default function ResultsPage() {
 
     setSelectedTypes(updatedSelectedTypes);
 
-    // Filter results based on selected types
     if (updatedSelectedTypes.length > 0) {
       const filtered = results.filter((result) =>
         updatedSelectedTypes.includes(result.materialType)
@@ -105,14 +95,13 @@ export default function ResultsPage() {
   };
 
   return (
-    <>
+	  <>
       <ResultsPageNavBar onSearch={handleSearch} />
       <div className="flex-col pt-16 bg-white p-6">
         <h1 className="break-words text-center text-2xl md:text-3xl font-semibold mb-6">
-          {loading ? 'Searching for ' : 'Results for '} '{true && displayedQuery}'
+          {loading ? 'Searching for ' : 'Results for '} &apos;{displayedQuery}&apos;
         </h1>
         <div className="flex gap-6 bg-white">
-          {/* Left Sidebar */}
           <aside className="sticky top-20 w-full md:w-1/4 p-6 mb-auto border border-black border-opacity-20">
             <h3 className="text-xl font-semibold mb-4">Material Types</h3>
             <div>
@@ -120,45 +109,37 @@ export default function ResultsPage() {
                 <span>Past Papers ({materialCounts.pastPapers})</span>
                 <input
                   type="checkbox"
-                  className="form-checkbox text-blue-600"
-                  value="past-papers"
+                  checked={selectedTypes.includes('past-papers')}
                   onChange={() => handleCheckboxChange('past-papers')}
                 />
               </label>
-              <hr className="border-gray-300" />
               <label className="flex justify-between items-center py-2 w-full flex-wrap">
                 <span>Assignments ({materialCounts.assignments})</span>
                 <input
                   type="checkbox"
-                  className="form-checkbox text-blue-600"
-                  value="assignment"
+                  checked={selectedTypes.includes('assignment')}
                   onChange={() => handleCheckboxChange('assignment')}
                 />
               </label>
-              <hr className="border-gray-300" />
               <label className="flex justify-between items-center py-2 w-full flex-wrap">
                 <span>Notes ({materialCounts.notes})</span>
                 <input
                   type="checkbox"
-                  className="form-checkbox text-blue-600"
-                  value="notes"
+                  checked={selectedTypes.includes('notes')}
                   onChange={() => handleCheckboxChange('notes')}
                 />
               </label>
-              <hr className="border-gray-300" />
               <label className="flex justify-between items-center py-2 w-full flex-wrap">
                 <span>Solutions ({materialCounts.solutions})</span>
                 <input
                   type="checkbox"
-                  className="form-checkbox text-blue-600"
-                  value="solutions"
+                  checked={selectedTypes.includes('solutions')}
                   onChange={() => handleCheckboxChange('solutions')}
                 />
               </label>
             </div>
           </aside>
 
-          {/* Right Results Section */}
           <section className="w-3/4 h-full min-h-screen overflow-y-auto">
             {loading ? (
               <div className="flex justify-center items-center h-full">
@@ -177,7 +158,11 @@ export default function ResultsPage() {
           </section>
         </div>
       </div>
-    </>
+      </>
   );
 }
-
+export default function ResultsPage(){
+	return <Suspense fallback={<p>Loading...</p>}>
+	<ResultsPageComponent/>
+    </Suspense>
+}

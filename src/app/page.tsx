@@ -18,7 +18,7 @@ export default function Home() {
 	const handleSearch = (query: string) => {
 		router.push(`/results?page=${encodeURIComponent(query)}`); // Navigate to the results page with the query
 	};
-  return (
+	return (
     <>
     <NavBar/>
       <section className="hero bg-black text-white text-center p-8 relative min-h-screen">
@@ -51,5 +51,6 @@ export default function Home() {
         </p>
       </section>
     </>
+
   );
 }

@@ -10,6 +10,7 @@ interface UserData {
   downloadCount: number;
   profileUrl?: string;
   uploadCount: number;
+  photoURL?: string;
   uid?:string;
 }
 
@@ -100,6 +101,12 @@ export default class UserService {
 			    const provider = new GoogleAuthProvider();
 			    const result = await signInWithPopup(auth, provider);
 			    const credential = GoogleAuthProvider.credentialFromResult(result);
+			    if (credential) {
+				    // Re-authenticate the user with the credential
+				    await reauthenticateWithCredential(user, credential);
+			    } else {
+				    throw new Error('Failed to obtain Google credential');
+			    }
 
 			    // Re-authenticate the user with the credential
 			    await reauthenticateWithCredential(user, credential);

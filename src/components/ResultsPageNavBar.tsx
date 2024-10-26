@@ -29,10 +29,11 @@ export default function ResultsPageNavBar({ onSearch }: ResultsPageNavBarProps) 
       <div className="flex-grow mx-4">
         <form onSubmit={handleSearchSubmit}>
           <Search
-            isRounded={false}
-            onSearch={onSearch} // Pass the onSearch prop here
-            query={searchQuery} // Update to use the query state
-            onChange={(e) => setSearchQuery(e.target.value)} // Update search input state
+	  isRounded={false}
+	  onSearch={(query) => {
+		  setSearchQuery(query);
+		  onSearch(query);
+	  }}
           />
         </form>
       </div>

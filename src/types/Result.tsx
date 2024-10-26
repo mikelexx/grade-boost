@@ -10,6 +10,6 @@ export interface Result {
   authorName ?: string;
   fieldOfStudy ?: string;
   fileUrl ?: string;
-  fileNameTags?: any[];
+  fileNameTags?: string[];
 
 }

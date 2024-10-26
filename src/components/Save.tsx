@@ -45,9 +45,6 @@ export default function Save({ currUser, fileId }: SaveProps) {
     }
   };
 
-  const handleLoginClick = () => {
-    setIsPopupOpen(false);
-  };
 
   const SaveButton = (
   <button

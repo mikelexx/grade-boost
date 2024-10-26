@@ -30,7 +30,7 @@ export default function Features() {
         />
         <h3 className="font-semibold text-lg mb-2">Save</h3>
         <p className="text-gray-600">
-          The "Save" feature allows users to bookmark or save materials to their account for later access. This is especially helpful when users want to keep certain materials handy without needing to download them immediately.
+          The &quotSave&quot feature allows users to bookmark or save materials to their account for later access. This is especially helpful when users want to keep certain materials handy without needing to download them immediately.
         </p>
       </div>
 
@@ -45,7 +45,7 @@ export default function Features() {
         />
         <h3 className="font-semibold text-lg mb-2">Open</h3>
         <p className="text-gray-600">
-          The "Open" feature enables users to view the study materials directly within the browser without downloading them. This option is perfect for quick reviews or accessing files on the go.
+          The &quotOpen&quot feature enables users to view the study materials directly within the browser without downloading them. This option is perfect for quick reviews or accessing files on the go.
         </p>
       </div>
     </div>
