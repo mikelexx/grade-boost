@@ -1,4 +1,5 @@
 *GradeBoost*
+
 GradeBoost is an educational web platform that offers students and educators access to a comprehensive library of study materials, including lecture notes, assignments, past papers, marking schemes, and exam solutions. Users can view, download, or save materials shared by others, and they are encouraged to upload their own study materials to contribute to the community.
 
 
