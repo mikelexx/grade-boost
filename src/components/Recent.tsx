@@ -58,7 +58,7 @@ export default function RecentItems() {
             >
               <div className="flex items-center space-x-4">
                 <Image
-                  src={item.authorPhotoUrl || "/images/small.jpeg"}
+                  src={item.authorPhotoUrl || "/images/defaultUser.jpeg"}
                   alt={`${item.authorName} profile picture`}
                   width={40}
                   height={40}
