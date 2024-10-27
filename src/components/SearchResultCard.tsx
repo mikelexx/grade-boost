@@ -59,7 +59,7 @@ export default function SearchResultCard({ result }: SearchResultCardProps) {
             <span className="hidden sm:inline">Open</span> {/* Hide text on small screens */}
           </button>
 
-          <Download fileUrl={result.fileUrl} fileName={result.fileName} />
+          <Download fileUrl={result.fileUrl} fileName={result.fileName} fileId={result.id || ''} />
           <Save currUser={UserService.getCurrentUser()} fileId={result.id || ''} />
           {/* Kebab menu */}
           <button className="text-gray-400 text-xl">⋮</button>

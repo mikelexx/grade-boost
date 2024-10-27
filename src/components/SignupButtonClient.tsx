@@ -36,7 +36,7 @@ export default function SignUpButtonClient() {
         await UserService.reauthenticateUser(currentUser, password);
 
         // Now delete the user document and the user account
-        await UserService.deleteUser(currentUser);
+        await UserService.deleteUserAccount(currentUser);
         alert('Your account has been deleted successfully.');
         setIsModalOpen(false); // Close modal
       } catch (error) {
@@ -57,7 +57,7 @@ export default function SignUpButtonClient() {
       } else if (user){
 	      console.log('user is from google...');
 	      await UserService.reauthenticateUser(user, '');
-	      await UserService.deleteUser(user);
+	      await UserService.deleteUserAccount(user);
       }
       else{
 

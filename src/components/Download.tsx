@@ -1,5 +1,4 @@
 "use client";
-"use client";
 import 'reactjs-popup/dist/index.css';
 import React, { useState, useEffect} from 'react';
 import Popup from 'reactjs-popup';
@@ -17,11 +16,12 @@ import app from '../../firebaseConfig';
 interface DownloadProps {
   user?: CurrentUser | null;
   fileUrl ?: string;
+  fileId:string;
   fileName ?: string;
   currUser ?: CurrentUser;
 }
 
-export default function Download({ currUser, fileUrl, fileName }: DownloadProps) {
+export default function Download({ currUser, fileUrl, fileName, fileId }: DownloadProps) {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [progress, setProgress] = useState(0);
   const [isDownloading, setIsDownloading] = useState(false);
@@ -51,9 +51,9 @@ export default function Download({ currUser, fileUrl, fileName }: DownloadProps)
       return;
     }
 
-    if (user.downloadCount < user.uploadCount * 5) {
+    const accessedBefore = await FileService.hasUserAccessedFileBefore(user.uid, fileId);
+    if (user.downloadCount < user.uploadCount * 5 || accessedBefore) {
       // Proceed with file download
-      console.log(`uploads ${user.uploadCount}, downlaods: ${user.downloadCount}` );
       setIsDownloading(true);
       setProgress(0);
       try {
@@ -68,13 +68,18 @@ export default function Download({ currUser, fileUrl, fileName }: DownloadProps)
 		      });
 	      }, 300); // Increase progress every 300ms
 
-	      console.log(`downloading from this url: ${fileUrl}`);
 	     await FileService.downloadFile(fileName || '', fileUrl || '');
+	     if (!accessedBefore){
+		     await UserService.incrementDownloadCount(user.uid);
+	     }else{
+		     console.log(`fileId ${fileId} never been accessedBefore by this user, so increaseDownloadCOunt`);
+	     }
+	     await FileService.checkAndLogFileAccess(user.uid, fileId)
 	     setIsPopupOpen(false);
 	     setIsDownloading(false);
-	     console.log('download finished');
       } catch (error) {
         console.error('Error downloading file:', error);
+	     await UserService.incrementDownloadCount(user.uid);
 	setIsDownloading(false);
       }
 

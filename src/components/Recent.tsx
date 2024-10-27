@@ -89,7 +89,7 @@ export default function RecentItems() {
                 <p className="font-bold text-lg mb-2">{item.fileName}</p>
                 <hr className="border-t border-gray-300 mb-4" />
                 <div className="flex items-center space-x-4">
-                  <Download fileUrl={item.fileUrl} fileName={item.fileName} />
+                  <Download fileId={item.id || ''} fileUrl={item.fileUrl} fileName={item.fileName} />
                   <Save currUser={UserService.getCurrentUser()} fileId={item.id || ''} />
                   <button onClick={handleOpen} className="flex items-center space-x-1 text-yellow-500 hover:text-yellow-700">
                     <FaFolderOpen />

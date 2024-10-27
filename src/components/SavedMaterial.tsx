@@ -125,7 +125,7 @@ const handleRemoveClick = async (fileId: string) => {
               <button onClick={() => handleOpen(material.fileUrl)} className="flex items-center space-x-1 text-yellow-500 hover:text-yellow-700">
                 <FaFolderOpen /> <span className="ml-1">Open</span>
               </button>
-              <Download fileUrl={material.fileUrl}/>
+              <Download  fileId={material.id || ''} fileUrl={material.fileUrl}/>
               <button className="text-red-500 hover:text-red-700" onClick={() => handleRemoveClick(material.id || '')}>
                 <FaTrashAlt /> <span className="ml-1">Remove</span>
               </button>

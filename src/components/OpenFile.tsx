@@ -50,25 +50,26 @@ const OpenFile: React.FC<OpenFileProps> = ({ isOpen, onClose, fileId, fileUrl}) 
     }
 
     try {
-      // Check if download limit is exceeded
-      if (user.downloadCount >= user.uploadCount * 5) {
+      const fileAccessedBefore = await FileService.hasUserAccessedFileBefore(user.uid, fileId);
+      //old materials he 'payed' to access will still be accessible even if current limit is reached
+      //only the new ones will be hidden from access
+      if (user.downloadCount >= user.uploadCount * 5 && !fileAccessedBefore) {
 	      console.log('download count greateer than upload count');
         // Show popup to ask the user to upload more files
         setIsPopupOpen(true);
         return;
       }
 
-      // Check if the file can be opened (track and increment download count)
-      const canOpen = await FileService.openFile(user.uid, fileId);
+      // Allow the iframe to render
+      setCanOpenFile(true);
 
-      if (canOpen) {
-        // Allow the iframe to render
-        setCanOpenFile(true);
-      } else {
-        alert("Error opening the file.");
+      if (!fileAccessedBefore) {
+	UserService.incrementDownloadCount(user.uid);
       }
+      await FileService.checkAndLogFileAccess(user.uid, fileId);
     } catch (error) {
       console.error("Error handling file open:", error);
+      alert('not your fault, system experiencing technical diffulties');
     }
   };
 
