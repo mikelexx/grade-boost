@@ -144,9 +144,10 @@ export default class FileService {
 
   static async searchMaterials(queryStr: string) {
     const materialsRef = collection(db, "materials");
+    const keywords = queryStr.toLowerCase().split(" ");
     const queryParam = query(
       materialsRef,
-      where('fileNameTags', 'array-contains', queryStr.toLowerCase())
+      where('fileNameTags', 'array-contains-any', keywords)
     );
     const querySnapshot = await getDocs(queryParam);
 
