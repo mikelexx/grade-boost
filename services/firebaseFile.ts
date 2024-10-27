@@ -256,25 +256,39 @@ export default class FileService {
     });
   }
 
-  static async openFile(userId: string, fileId: string): Promise<boolean> {
+  static async hasUserAccessedFileBefore(userId: string, fileId: string): Promise<boolean> {
     try {
       const openedRef = collection(db, "openedMaterials");
-
       const querySnapshot = await getDocs(
         query(openedRef, where("userId", "==", userId), where("fileId", "==", fileId))
       );
 
-      if (querySnapshot.empty) {
-        await addDoc(openedRef, {
-          userId: userId,
-          fileId: fileId,
-          openedAt: new Date(),
-        });
-      }
-      return true; // File opened successfully
+      return !querySnapshot.empty; // Returns true if the file has been accessed
     } catch (error) {
-      console.error("Error logging file open:", error);
-      return false; // Error occurred
+      console.error("Error checking file access history:", error);
+      return false;
     }
   }
+  static async logUserFileAccess(userId: string, fileId: string): Promise<void> {
+	  {/*Logs the user's access to the file by adding a document to openedMaterials
+	     if it's the first access.*/}
+    try {
+      const openedRef = collection(db, "openedMaterials");
+      await addDoc(openedRef, {
+        userId: userId,
+        fileId: fileId,
+        accessedAt: new Date(),
+      });
+    } catch (error) {
+      console.error("Error logging file access:", error);
+    }
+  }
+  static async checkAndLogFileAccess(userId: string, fileId: string): Promise<boolean> {
+    const hasAccessedBefore = await this.hasUserAccessedFileBefore(userId, fileId);
+    if (!hasAccessedBefore) {
+      await this.logUserFileAccess(userId, fileId);
+    }
+    return !hasAccessedBefore;
+  }
+
 }

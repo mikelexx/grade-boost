@@ -1,4 +1,4 @@
-import { getFirestore, doc, setDoc, getDoc, updateDoc,deleteDoc, increment, DocumentReference, DocumentData } from 'firebase/firestore';
+import { getFirestore, query, where, collection,  doc, setDoc, getDoc, updateDoc,deleteDoc,  getDocs, increment, DocumentReference, DocumentData } from 'firebase/firestore';
 import {GoogleAuthProvider, getAuth,signInWithPopup, signInWithEmailAndPassword,reauthenticateWithCredential, onAuthStateChanged,deleteUser, User} from 'firebase/auth';
 import app from '../firebaseConfig';
 const auth = getAuth(app);
@@ -39,7 +39,6 @@ export default class UserService {
       if (userDoc.exists()) {
 	      return {uid, ...userDoc.data()} as UserData;  // Return the user data with the correct type
       } else {
-        console.log('User document not found');
         return null;
       }
     } catch (error) {
@@ -64,7 +63,6 @@ export default class UserService {
     }
   }
 
-  // Function to increment download count
   static async incrementDownloadCount(uid: string): Promise<void> {
     try {
       const userDocRef: DocumentReference<DocumentData> = doc(db, 'users', uid);
@@ -75,13 +73,12 @@ export default class UserService {
       throw error;
     }
   }
-
   // Function to increment upload count
   static async incrementUploadsCount(uid: string): Promise<void> {
     try {
       const userDocRef: DocumentReference<DocumentData> = doc(db, 'users', uid);
       await updateDoc(userDocRef, { uploadCount: increment(1) });
-      console.log(`user downloadCount += 1`)
+      console.log(`user uploadCount += 1`)
     } catch (error) {
       console.error('Error incrementing upload count:', error);
       throw error;
@@ -121,24 +118,55 @@ export default class UserService {
       throw error; // Throw the error to handle it in the calling function
     }
   }
+static async deleteUserAccount(user: User): Promise<void> {
+  try {
+    const userData = await UserService.getUserData(user.uid);
+    if (!userData || !userData.uid) {
+      throw new Error("No valid user data obtained");
+    }
 
-  static async deleteUser(user: User): Promise<void> {
+    const userDocRef = doc(db, "users", userData.uid);
+    await deleteDoc(userDocRef);
 
-		  try {
-		    const userData = await UserService.getUserData(user.uid);
-		    if(userData){
-			    const userDocRef: DocumentReference<DocumentData> = doc(db, 'users', userData.uid || '');
-		            await deleteDoc(userDocRef);
-			    await deleteUser(user);
-		    }
-		    else{
-			    throw new Error('No user obtained');
-		    }
-		  } catch (error) {
-		     console.error('Error deleting account:', error);
-		    throw error;
-		  }
+    await this.deleteUserSavedMaterials(user.uid);
 
+    await this.deleteUserOpenedMaterials(user.uid);
+
+    await deleteUser(user);
+  } catch (error) {
+    console.error("Error deleting account:", error);
+    throw error;
+  }
 }
+// Function to delete all saved materials associated with a user
+static async deleteUserSavedMaterials(userId: string): Promise<void> {
+  try {
+    const savedRef = collection(db, "savedMaterials");
+    const querySnapshot = await getDocs(query(savedRef, where("userId", "==", userId)));
+
+    const deletePromises = querySnapshot.docs.map((doc) => deleteDoc(doc.ref));
+    await Promise.all(deletePromises);
+    console.log(`All saved materials for user ${userId} have been deleted.`);
+  } catch (error) {
+    console.error(`Error deleting saved materials for userId ${userId}:`, error);
+    throw error;
+  }
+}
+
+// Function to delete all opened materials associated with a user
+static async deleteUserOpenedMaterials(userId: string): Promise<void> {
+  try {
+    const openedRef = collection(db, "openedMaterials");
+    const querySnapshot = await getDocs(query(openedRef, where("userId", "==", userId)));
+
+    const deletePromises = querySnapshot.docs.map((doc) => deleteDoc(doc.ref));
+    await Promise.all(deletePromises);
+    console.log(`All opened materials for user ${userId} have been deleted.`);
+  } catch (error) {
+    console.error(`Error deleting opened materials for userId ${userId}:`, error);
+    throw error;
+  }
+}
+
 }
 
