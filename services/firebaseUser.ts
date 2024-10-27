@@ -67,7 +67,6 @@ export default class UserService {
     try {
       const userDocRef: DocumentReference<DocumentData> = doc(db, 'users', uid);
       await updateDoc(userDocRef, { downloadCount: increment(1) });
-      console.log(`user downloadCount += 1`)
     } catch (error) {
       console.error('Error incrementing download count:', error);
       throw error;
@@ -78,7 +77,6 @@ export default class UserService {
     try {
       const userDocRef: DocumentReference<DocumentData> = doc(db, 'users', uid);
       await updateDoc(userDocRef, { uploadCount: increment(1) });
-      console.log(`user uploadCount += 1`)
     } catch (error) {
       console.error('Error incrementing upload count:', error);
       throw error;
@@ -146,7 +144,6 @@ static async deleteUserSavedMaterials(userId: string): Promise<void> {
 
     const deletePromises = querySnapshot.docs.map((doc) => deleteDoc(doc.ref));
     await Promise.all(deletePromises);
-    console.log(`All saved materials for user ${userId} have been deleted.`);
   } catch (error) {
     console.error(`Error deleting saved materials for userId ${userId}:`, error);
     throw error;
@@ -161,7 +158,6 @@ static async deleteUserOpenedMaterials(userId: string): Promise<void> {
 
     const deletePromises = querySnapshot.docs.map((doc) => deleteDoc(doc.ref));
     await Promise.all(deletePromises);
-    console.log(`All opened materials for user ${userId} have been deleted.`);
   } catch (error) {
     console.error(`Error deleting opened materials for userId ${userId}:`, error);
     throw error;

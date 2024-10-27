@@ -51,11 +51,9 @@ export default function SignUpButtonClient() {
   };
 
   const handleDeleteAccountClicked = async () => {
-	  console.log('called handleDeleteAccountClicked');
 	  if (user && user.providerData[0].providerId === 'password') {
 		  setIsModalOpen(true);
       } else if (user){
-	      console.log('user is from google...');
 	      await UserService.reauthenticateUser(user, '');
 	      await UserService.deleteUserAccount(user);
       }

@@ -54,7 +54,6 @@ const OpenFile: React.FC<OpenFileProps> = ({ isOpen, onClose, fileId, fileUrl}) 
       //old materials he 'payed' to access will still be accessible even if current limit is reached
       //only the new ones will be hidden from access
       if (user.downloadCount >= user.uploadCount * 5 && !fileAccessedBefore) {
-	      console.log('download count greateer than upload count');
         // Show popup to ask the user to upload more files
         setIsPopupOpen(true);
         return;

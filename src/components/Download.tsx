@@ -71,8 +71,6 @@ export default function Download({ currUser, fileUrl, fileName, fileId }: Downlo
 	     await FileService.downloadFile(fileName || '', fileUrl || '');
 	     if (!accessedBefore){
 		     await UserService.incrementDownloadCount(user.uid);
-	     }else{
-		     console.log(`fileId ${fileId} never been accessedBefore by this user, so increaseDownloadCOunt`);
 	     }
 	     await FileService.checkAndLogFileAccess(user.uid, fileId)
 	     setIsPopupOpen(false);
