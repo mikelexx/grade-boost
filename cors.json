@@ -1,6 +1,6 @@
 [
   {
-    "origin": ["http://localhost:3000", "https://your-production-domain.com"],
+    "origin": ["https://grade-boost-michael-murithis-projects.vercel.app"],
     "method": ["GET", "HEAD", "PUT", "POST", "DELETE"],
     "allowHeaders": ["Content-Type"],
     "responseHeader": ["Content-Type", "Access-Control-Allow-Origin", "Content-Disposition"],
