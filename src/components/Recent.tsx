@@ -48,46 +48,32 @@ export default function RecentItems() {
 
   return (
     recentItems.length > 0 && (
-      <section>
-        <h2 className="text-center text-2xl font-semibold mb-6 mx-auto">Recent Uploads</h2>
-        <div className="grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-6">
+      <section  className='px-8'>
+      <hr className="m-8"/>
+        <h2 className="text-center text-2xl font-semibold mb-16 mx-auto">Recent Uploads</h2>
+        <div className="grid grid-flow-col auto-cols-[minmax(300px,1fr)] gap-6 overflow-x-hidden">
           {recentItems.map((item) => (
             <div
               key={item.id}
               className="bg-white text-black p-6 mb-6 border border-black border-opacity-20 rounded-lg flex flex-col items-start space-y-4"
             >
               <div className="flex items-center space-x-4">
-                <Image
-                  src={item.authorPhotoUrl || "/images/defaultUser.jpeg"}
-                  alt={`${item.authorName} profile picture`}
-                  width={40}
-                  height={40}
-                  className="rounded-full"
-
-                />
-		<p>
-			<span className="font-semibold text-green">{item.authorName || 'Anonymous User'}</span> posted{" "}
-			{item.materialType && item.materialType.endsWith('s') ? "" :
-				item.materialType && ['a', 'e', 'i', 'o', 'u'].includes(item.materialType.charAt(0).toLowerCase()) ? 'an' : 'a'}{" "}
-			{item.materialType || 'material'} {/* Fallback to 'material' if materialType is undefined */}
-			<br />
-			<span className="font-semibold">{timeAgo(item.uploadedAt)} </span>
-		</p>
+                <p className="font-bold text-lg mb-2">{item.fileName}</p>
               </div>
 
 	      <div className="w-full h-[100px] overflow-hidden">
 	      <Image
 		      src={item.thumbnailUrl || '/images/defaultThumbnail.jpeg'}
 		      alt={`${item.fileName} thumbnail`}
-		      width={200} // controls width directly
-		      height={100} // sets height to match proportionally
-		      className="w-full h-full object-cover rounded" // object-cover keeps aspect ratio
+		      width={200}
+		      height={100}
+		      className="w-full h-full object-cover rounded"
 	      />
 	      </div>
 
 
               <div className="w-full">
-                <p className="font-bold text-lg mb-2">{item.fileName}</p>
+	      <span className="font-semibold">posted {timeAgo(item.uploadedAt)}</span>
                 <hr className="border-t border-gray-300 mb-4" />
                 <div className="flex items-center space-x-4">
                   <Download fileId={item.id || ''} fileUrl={item.fileUrl} fileName={item.fileName} />
@@ -98,7 +84,6 @@ export default function RecentItems() {
                   </button>
                 </div>
               </div>
-              {/* OpenFile for opening the file */}
               <OpenFile fileId={item.id || ''} isOpen={isOpenFileOpen} onClose={handleClose} fileUrl={item.fileUrl}  />
             </div>
           ))}

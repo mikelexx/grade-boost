@@ -9,13 +9,13 @@ export default function Categories({ fields }: { fields: Field[] }) {
   const router = useRouter();
 
   const handleCategoryClick = (dept: string) => {
-    // Navigate to the results page with the department as a query parameter
+
     router.push(`/results?category=${encodeURIComponent(dept)}`);
   };
 
   return (
     <>
-      <section className="my-12">
+      <section className="my-12 px-8">
         <h2 className="text-center text-2xl font-semibold mb-6 mx-auto">Browse By Categories</h2>
         <div>
           {fields.map((field) => (

@@ -21,23 +21,25 @@ export default function Home() {
 	return (
     <>
     <NavBar/>
-      <section className="hero bg-black text-white text-center p-8 relative min-h-screen">
+      <section className="mt-28 hero bg-black text-white text-center p-8 relative min-h-screen">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-4xl md:text-6xl font-bold mb-4 leading-tight">
             Master Your Exams with the Right Study Resources!
           </h1>
           <p className="text-lg md:text-xl mb-6">
-            Access notes, assignments, past papers, and more—everything you need to succeed.
+            Access notes, assignments, past papers, and more
           </p>
         </div>
         <Search onSearch={handleSearch} />
       </section>
       <Categories fields={fields}/>
+      <hr className="m-8"/>
       <Features/>
       <RecentItems />
-      <section className="bg-gray-100 py-16 text-center">
-        <h2 className="text-3xl md:text-4xl font-bold mb-8">Website Walkthrough</h2>
-        <div className="max-w-4xl mx-auto">
+      <hr className="m-8"/>
+      <section className="text-center">
+        <h2 className="text-center text-2xl font-semibold mb-16 mx-auto">Website Walkthrough</h2>
+        <div id="demo" className="max-w-4xl mx-auto mb-8">
           <video
             controls
             className="w-full rounded-lg shadow-lg"
