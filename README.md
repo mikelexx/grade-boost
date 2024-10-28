@@ -4,18 +4,18 @@ GradeBoost is an educational web platform that offers students and educators acc
 
 
 **Table of Contents**
-1. [Features](#features)
-2. [Demo](#demo)
-3. [Tech Stack](stack)
-4. [Getting Started](#getting-started)
-5. [Project Structure](#project-structure)
-6. [Environment Variables](#environment-variables)
-7. [Firebase Integration](#firebase-integration)
-8. [Search and Filtering](#search-and-filtering)
-9. [Authentication](#authentication)
-10. [Cloud Functions and Hosting](cloud-functions-and-hosting)
-11. [Contributing](#contributing)
-12. [License](#demo)
+* [Features](#features)
+* [Demo](#demo)
+* [Tech Stack](stack)
+* [Getting Started](#getting-started)
+* [Project Structure](#project-structure)
+* [Environment Variables](#environment-variables)
+* [Firebase Integration](#firebase-integration)
+* [Search and Filtering](#search-and-filtering)
+* [Authentication](#authentication)
+* [Cloud Functions and Hosting](cloud-functions-and-hosting)
+* [Contributing](#contributing)
+* [License](#demo)
 
 **Features**
 
