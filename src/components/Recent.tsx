@@ -49,7 +49,7 @@ export default function RecentItems() {
   return (
     recentItems.length > 0 && (
       <section>
-        <h2 className="text-center text-2xl font-semibold mb-6 mx-auto">Recent Activities</h2>
+        <h2 className="text-center text-2xl font-semibold mb-6 mx-auto">Recent Uploads</h2>
         <div className="grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-6">
           {recentItems.map((item) => (
             <div
@@ -75,15 +75,16 @@ export default function RecentItems() {
 		</p>
               </div>
 
-              <div className="w-full">
-                <Image
-                  src={item.thumbnailUrl || '/images/defaultThumbnail.jpeg'} // Use a default thumbnail if not available
-                  alt={`${item.fileName} thumbnail`}
-                  width={400}
-                  height={400}
-                  className="w-full h-auto object-cover rounded"
-                />
-              </div>
+	      <div className="w-full h-[100px] overflow-hidden">
+	      <Image
+		      src={item.thumbnailUrl || '/images/defaultThumbnail.jpeg'}
+		      alt={`${item.fileName} thumbnail`}
+		      width={200} // controls width directly
+		      height={100} // sets height to match proportionally
+		      className="w-full h-full object-cover rounded" // object-cover keeps aspect ratio
+	      />
+	      </div>
+
 
               <div className="w-full">
                 <p className="font-bold text-lg mb-2">{item.fileName}</p>

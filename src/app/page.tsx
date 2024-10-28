@@ -33,8 +33,8 @@ export default function Home() {
         <Search onSearch={handleSearch} />
       </section>
       <Categories fields={fields}/>
-      <RecentItems />
       <Features/>
+      <RecentItems />
       <section className="bg-gray-100 py-16 text-center">
         <h2 className="text-3xl md:text-4xl font-bold mb-8">Website Walkthrough</h2>
         <div className="max-w-4xl mx-auto">
@@ -46,9 +46,6 @@ export default function Home() {
             Your browser does not support the video tag.
           </video>
         </div>
-        <p className="text-gray-600 mt-4">
-          Watch this quick tour to learn how to navigate and use GradeBoost effectively.
-        </p>
       </section>
     </>
 

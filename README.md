@@ -28,7 +28,7 @@ GradeBoost is an educational web platform that offers students and educators acc
 ***Admin and User Analytics***: Basic usage analytics and monitoring.
 
 **Demo**
-To view a demo of GradeBoost, click here. ()
+To view a demo of GradeBoost, [click here](https://youtu.be/sPL0t33Z1ws?feature=shared)
 
 **Tech Stack**
 
@@ -63,7 +63,18 @@ npm install
 - Set up a Firebase project in the Firebase Console.
 - Enable Firestore, Firebase Storage, and Firebase Authentication in your project.
 - Upgrade to the Blaze plan to support Cloud Functions if needed.
-**Environment Variables**: Copy `.env.example` to `.env.local` and fill in the necessary Firebase configuration details.
+**Environment Variables**: Copy your firebase project keys  to `.env.local` and fill in the necessary Firebase configuration details.
+Set up .env.local as follows:
+
+```
+NEXT_PUBLIC_FIREBASE_API_KEY=your_firebase_api_key
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_firebase_auth_domain
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_firebase_project_id
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_firebase_storage_bucket
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_firebase_messaging_sender_id
+NEXT_PUBLIC_FIREBASE_APP_ID=your_firebase_app_id
+
+```
 
 
 5. ***Run the Development Server***:
@@ -96,18 +107,6 @@ GradeBoost/
 **components**: Reusable UI components (e.g., `UploadButton.tsx`, `RecentItems.tsx`).
 **services**: Firebase service files (e.g., ` firebaseUser.ts`, `firebaseFile.ts`).
 **types**: TypeScript types/interfaces (e.g., `Material`, `Result`).
-*Environment Variables*
-Set up .env.local as follows:
-
-```
-NEXT_PUBLIC_FIREBASE_API_KEY=your_firebase_api_key
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_firebase_auth_domain
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_firebase_project_id
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_firebase_storage_bucket
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_firebase_messaging_sender_id
-NEXT_PUBLIC_FIREBASE_APP_ID=your_firebase_app_id
-
-```
 Ensure your Firebase credentials are correctly configured in this file for both development and production environments.
 
 *Firebase Integration*
@@ -146,13 +145,6 @@ Firebase Cloud Functions provide server-side support for handling specific tasks
 
 Note: Deploying with Cloud Functions requires the Blaze plan, as it enables the necessary APIs (cloudfunctions.googleapis.com, artifactregistry.googleapis.com, and cloudbuild.googleapis.com).
 
-To deploy the project:
-bash
-```
-firebase deploy
-```
-Make sure you have the Firebase CLI installed and configured with your Firebase project. If you encounter any errors, ensure that you are using Node.js version 20 and the required APIs are enabled.
-
 *Contributing*
 Contributions are welcome! Feel free to open a pull request with any enhancements or bug fixes. Please ensure all pull requests follow the guidelines in the CONTRIBUTING.md file.
 
@@ -163,4 +155,4 @@ Contributions are welcome! Feel free to open a pull request with any enhancement
 5. Open a pull request.
 
 *License*
-This project is licensed under the apache License. See the LICENSE file for details.
+Not yet
