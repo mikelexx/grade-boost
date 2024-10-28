@@ -5,8 +5,8 @@ import UploadButton from "@/components/UploadButton";
 export default function About() {
   return (
     <>
-      <nav className="flex items-center justify-between p-4 bg-white text-black ">
-      <div className="flex-row space-x-4">
+      <nav className="fixed top-0 left-0 shadow-lg z-20 w-full flex items-center justify-between p-4 bg-gray-100 text-black ">
+      <div className="flex-row space-x-4 ">
         <Image src='/images/logo.png' width={70} height={70} alt='Logo' className="inline-block" />
         <Link className="text-lg font-bold" href="/">
           GradeBoost
@@ -27,7 +27,7 @@ export default function About() {
       </div>
     </nav>
 
-      <section className="bg-gray-100 p-6 min-h-screen">
+      <section className="mt-28 bg-white p-6 min-h-screen">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-4xl font-bold mb-4">About GradeBoost</h1>
           <p className="mb-4">
