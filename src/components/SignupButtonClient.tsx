@@ -81,7 +81,7 @@ export default function SignUpButtonClient() {
 
   return !isAuthPage && (
     !user ? (
-      <button className="bg-white text-black">
+      <button className="bg-tranparent text-black">
         <Link className="hover:underline" href="/auth">SignUp</Link>
       </button>
     ) : (

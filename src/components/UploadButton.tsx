@@ -46,7 +46,7 @@ export default function UploadButton({ currUser }: UploadButtonProps) {
     <>
       <button
         onClick={handleUploadClick}
-        className="flex items-center space-x-1 text-blue-500 hover:text-blue-700 px-4 py-2 bg-white border rounded-md shadow-sm hover:bg-gray-100"
+        className="flex items-center space-x-1 text-black-500 hover:text-black-700 px-4 py-2 bg-transparent border rounded-md shadow-sm hover:bg-gray-100"
       >
         <FaUpload />
         <span>Upload</span>

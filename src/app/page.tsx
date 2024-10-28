@@ -27,7 +27,7 @@ export default function Home() {
             Master Your Exams with the Right Study Resources!
           </h1>
           <p className="text-lg md:text-xl mb-6">
-            Access notes, assignments, past papers, and more
+            Access notes, assignments, past papers & more
           </p>
         </div>
         <Search onSearch={handleSearch} />
