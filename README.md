@@ -35,6 +35,7 @@ GradeBoost is an educational web platform that offers students and educators acc
 
 ## Demo
 - [click here](https://youtu.be/sPL0t33Z1ws?feature=shared) to view the demo video on YouTube.
+- [cick here ](https://grade-boost-michael-murithis-projects.vercel.app) to visit the deployed website.
 
 ## Tech Stack
 - **Frontend**: Next.js, Tailwind CSS, React, TypeScript
