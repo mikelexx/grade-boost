@@ -1,4 +1,3 @@
-import NavBar from "@/components/NavBar";
 import Authentication from "@/components/Authentication";
 export default function Authenticate(){
 	return <>
