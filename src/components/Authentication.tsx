@@ -5,6 +5,7 @@ import UserService from '../../services/firebaseUser';
 import app from '../../firebaseConfig';
 import { useRouter } from 'next/navigation'; // Use next/navigation for client components
 import { FirebaseError } from 'firebase/app';
+import Backbutton from './Back';
 
 
 const auth = getAuth(app);
@@ -162,6 +163,7 @@ export default function Authentication() {
             </p>
           )}
         </div>
+	<div className="m-8 flex justify-center align-center"><Backbutton/></div>
       </div>
     </div>
   );

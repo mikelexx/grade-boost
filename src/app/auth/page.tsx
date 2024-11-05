@@ -2,8 +2,7 @@ import NavBar from "@/components/NavBar";
 import Authentication from "@/components/Authentication";
 export default function Authenticate(){
 	return <>
-	<NavBar/>
-	<div className="min-h-screen">
+	<div className="min-h-screen z-50">
 	<Authentication/>
 	</div>
 	</>
