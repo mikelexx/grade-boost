@@ -156,7 +156,7 @@ export default function Authentication() {
             </p>
           ) : (
             <p>
-              Don&apost have an account?{' '}
+              Don&rsquo;t have an account?{' '}
               <button onClick={() => setIsSignUp(true)} className="text-blue-500 hover:underline">
                 Sign up
               </button>
