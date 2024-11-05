@@ -7,7 +7,7 @@ export default function NavBar() {
   return (
      <nav className="shadow-lg flex items-center justify-between p-4 bg-gray-100 text-black fixed top-0 left-0 z-20 w-full">
       <div className="flex-row space-x-4">
-        <Image src='/images/logo.png' width={70} height={70} alt='Logo' className="inline-block" />
+        <Image src='/images/logo.png' width={70} height={70} alt='Logo' className="inline-block w-auto h-auto" />
         <Link className="text-lg font-bold" href="/">
           GradeBoost
         </Link>

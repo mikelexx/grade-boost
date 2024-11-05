@@ -67,7 +67,7 @@ export default function RecentItems() {
 		      alt={`${item.fileName} thumbnail`}
 		      width={200}
 		      height={100}
-		      className="w-full h-full object-cover rounded"
+		      className="w-auto h-auto object-cover rounded"
 	      />
 	      </div>
 
