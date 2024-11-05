@@ -183,14 +183,6 @@ export default class FileService {
           id: doc.id,
           ...data,
         };
-
-        if (material.authorId) {
-          const userData = await UserService.getUserData(material.authorId);
-          if (userData) {
-            material.authorPhotoUrl = userData.photoURL || '/images/defaultUser.png';
-            material.authorName = userData.username || '';
-          }
-        }
         return material;
       })
     );
