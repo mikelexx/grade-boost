@@ -115,7 +115,7 @@ const handleRemoveClick = async (fileId: string) => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {savedMaterials.map((material) => (
           <div key={material.id} className="bg-white p-4 shadow-md rounded-lg">
-            <Image src={material.thumbnailUrl} alt={material.fileName} className="w-full h-48 object-cover mb-4 rounded" />
+            <Image src={material.thumbnailUrl} width={200} height={200} alt={material.fileName} className="w-auto h-48 object-cover mb-4 rounded" />
             <div className="flex justify-between items-center mb-2">
               <h2 className="text-lg font-semibold truncate">{material.fileName}</h2>
               <span className="text-sm text-gray-500">{material.materialType}</span>
