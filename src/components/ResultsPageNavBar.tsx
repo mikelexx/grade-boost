@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Image from "next/image";
 import Search from "./Search";
 import { useState } from "react";
 import UploadButton from "./UploadButton";
@@ -21,10 +20,9 @@ export default function ResultsPageNavBar({ onSearch }: ResultsPageNavBarProps) 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 h-16 flex items-center justify-between px-4 bg-gray-100 text-black shadow-md">
       <div className="flex-row space-x-4">
-        <Image src='/images/logo.png' width={60} height={60} alt='Logo' className="inline-block w-auto h-auto" />
-        <Link className="text-lg font-bold" href="/">
-          GradeBoost
-        </Link>
+      <Link href="/" className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 animate-pulse tracking-wide drop-shadow-lg">
+      Grade<span className="text-4xl italic text-yellow-300">Boost</span>
+      </Link>
       </div>
       <div className="flex-grow mx-4">
         <form onSubmit={handleSearchSubmit}>

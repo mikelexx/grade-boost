@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import SignUpButtonClient from "@/components/SignupButtonClient";
 import UploadButton from "@/components/UploadButton";
@@ -7,10 +6,9 @@ export default function About() {
     <>
       <nav className="fixed top-0 left-0 shadow-lg z-20 w-full flex items-center justify-between p-4 bg-gray-100 text-black ">
       <div className="flex-row space-x-4 ">
-        <Image src='/images/logo.png' width={70} height={70} alt='Logo' className="inline-block" />
-        <Link className="text-lg font-bold" href="/">
-          GradeBoost
-        </Link>
+      <Link href="/" className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 animate-pulse tracking-wide drop-shadow-lg">
+      Grade<span className="text-4xl italic text-yellow-300">Boost</span>
+      </Link>
       </div>
       <div className="flex space-x-4 items-center">
 	<Link className="hover:underline" href="/">Back</Link>
