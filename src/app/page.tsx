@@ -21,7 +21,7 @@ export default function Home() {
 	return (
     <>
     <NavBar/>
-      <section className="mt-28 hero bg-black text-white text-center p-8 relative min-h-screen">
+      <section className="pt-28 hero bg-black text-white text-center p-8 relative min-h-screen">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-4xl md:text-6xl font-bold mb-4 leading-tight">
             Master Your Exams with the Right Study Resources!
