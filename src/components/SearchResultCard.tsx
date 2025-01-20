@@ -37,6 +37,7 @@ export default function SearchResultCard({ result }: SearchResultCardProps) {
       {/* Info Section */}
       <div className="flex flex-col justify-between w-full md:ml-6">
         <div className="flex items-center mb-4">
+	{/*
           <Image
             src={result.authorPhotoUrl || '/images/defaultUser.jpeg'}
             alt="Author"
@@ -44,6 +45,7 @@ export default function SearchResultCard({ result }: SearchResultCardProps) {
             height={40}
             className="w-10 h-10 rounded-full mr-4"
           />
+		*/}
           <div>
             <h4 className="text-lg font-semibold">{result.fileName}</h4>
             <p className="text-gray-500 text-sm">
