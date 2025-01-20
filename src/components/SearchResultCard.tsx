@@ -24,7 +24,7 @@ export default function SearchResultCard({ result }: SearchResultCardProps) {
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow mb-6 flex flex-col md:flex-row">
+    <div className="bg-white p-6 rounded-lg shadow mb-6 flex flex-col md:flex-row border-t-2 ">
       {/* Image thumbnail */}
       <Image
         src={result.thumbnailUrl || '/images/defaultThumbnail.jpeg'}
